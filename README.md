@@ -31,17 +31,44 @@ Claude Code will read `CLAUDE.md` and walk you through the full setup interactiv
 - Node.js 18+
 - ngrok (free tier works)
 
+## ChatGPT Project Setup
+
+Once your MCP server is running and exposed via ngrok:
+
+1. **Enable Developer Mode** — ChatGPT Settings → Apps → Advanced Mode → Advanced Settings → Developer Mode ON
+2. **Create a new Project** — click + New Project. **Set memory to "Project only" during creation** — this option disappears after.
+3. **Add your MCP app** — Project Settings → Apps → Create App → paste your ngrok URL + `/sse` → Authentication: None → Save
+4. **Paste the project instructions** — copy everything after the divider in `chatgpt-instructions.md` into your ChatGPT Project instructions
+5. **Verify the connection** — in your ChatGPT Project, type: `Check the MCP tools available for this project and tell me what you can do.` ChatGPT will call `get_commands()` and report back. You may not see the tools listed in the UI — that's normal, ChatGPT verifies internally.
+6. **Start your session** — type `/resume` and ChatGPT will read your project context
+
+## Your First Session
+
+```
+1. bash ~/chatgpt-pm-mcp/start.sh        # server + ngrok
+2. cd /your/project && claude             # open Claude Code
+   /chatgpt-session                       # start watcher + executor mode
+3. In ChatGPT: /resume                    # ChatGPT reads your project
+4. Tell ChatGPT what you want to work on
+5. /plan [task]                           # ChatGPT reads files, structures task, asks to confirm
+6. /send                                  # ChatGPT calls submit_prompt() — no copy-paste
+7. Claude Code picks it up, executes, writes .mcp-response.md
+8. ChatGPT reads the result automatically (polls up to 10 min)
+9. Repeat
+```
+
 ## Tools Exposed to ChatGPT
 
 | Tool | What it does |
 |------|-------------|
+| `get_commands` | List all tools and verify the MCP connection is working |
 | `read_file` | Read any project file |
 | `list_directory` | List files in a directory |
 | `get_project_context` | Load .chatgpt-resume.md / CLAUDE.md / README |
 | `get_git_log` | Recent git commits |
 | `submit_prompt` | Send a task directly to Claude Code |
-| `get_response` | Read Claude Code's response |
-| `write_task` | Add a task to TASKS.md for Claude Code |
+| `get_response` | Poll for Claude Code's response (waits up to 10 min) |
+| `write_task` | Add a task to TASKS.md backlog (does not execute) |
 
 ## Slash Commands (in ChatGPT)
 
@@ -49,12 +76,13 @@ Once you paste `chatgpt-instructions.md` into your ChatGPT Project:
 
 | Command | What happens |
 |---------|-------------|
+| `/check` | ChatGPT calls get_commands() and reports available tools |
 | `/resume` | ChatGPT reads .chatgpt-resume.md and orients itself |
 | `/plan [task]` | ChatGPT reads context, structures the task, asks to confirm |
 | `/send` | ChatGPT calls submit_prompt() with the last plan |
-| `/response` | ChatGPT reads .mcp-response.md |
+| `/response` | ChatGPT reads .mcp-response.md immediately |
 | `/context` | ChatGPT reloads project files |
-| `/task [text]` | Saves to TASKS.md |
+| `/task [text]` | Saves to TASKS.md backlog |
 
 ## License
 
