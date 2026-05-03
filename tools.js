@@ -108,18 +108,18 @@ export const tools = [
     },
   },
   {
-    name: 'write_note',
-    description: 'Write a note or task to the project backlog for later.',
+    name: 'write_task',
+    description: 'Write a task to TASKS.md for Claude Code to pick up later.',
     inputSchema: {
       type: 'object',
-      properties: { content: { type: 'string', description: 'Note content' } },
+      properties: { content: { type: 'string', description: 'Task description' } },
       required: ['content'],
     },
     handler: ({ content }) => {
-      const fp = path.join(ROOT, 'BACKLOG.md');
+      const fp = path.join(ROOT, 'TASKS.md');
       const entry = `\n## ${new Date().toISOString()}\n${content}\n`;
       fs.appendFileSync(fp, entry);
-      return { written: true, file: 'BACKLOG.md' };
+      return { written: true, file: 'TASKS.md' };
     },
   },
 ];

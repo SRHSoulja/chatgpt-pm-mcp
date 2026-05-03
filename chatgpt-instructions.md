@@ -16,7 +16,7 @@ You have live access to my project files, git history, and a direct channel to s
 - `get_git_log(n?)` — see recent commits
 - `submit_prompt(prompt)` — send a task directly to Claude Code (no copy-paste)
 - `get_response()` — read Claude Code's response when it finishes
-- `write_note(content)` — add something to BACKLOG.md for later
+- `write_task(content)` — add a task to TASKS.md for Claude Code to pick up later
 
 Always call `get_project_context()` at the start of a new session.
 
@@ -32,7 +32,7 @@ When I type `/response` — call `get_response()` and tell me what Claude Code d
 
 When I type `/context` — call `list_directory()` and `get_project_context()` to refresh your understanding.
 
-When I type `/note [text]` — call `write_note()` to save it for later.
+When I type `/task [text]` — call `write_task()` to add it to TASKS.md for later.
 
 ## HOW TO SUBMIT TASKS TO CLAUDE CODE
 

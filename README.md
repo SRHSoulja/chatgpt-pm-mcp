@@ -41,7 +41,7 @@ Claude Code will read `CLAUDE.md` and walk you through the full setup interactiv
 | `get_git_log` | Recent git commits |
 | `submit_prompt` | Send a task directly to Claude Code |
 | `get_response` | Read Claude Code's response |
-| `write_note` | Add something to BACKLOG.md |
+| `write_task` | Add a task to TASKS.md for Claude Code |
 
 ## Slash Commands (in ChatGPT)
 
@@ -54,7 +54,7 @@ Once you paste `chatgpt-instructions.md` into your ChatGPT Project:
 | `/send` | ChatGPT calls submit_prompt() with the last plan |
 | `/response` | ChatGPT reads .mcp-response.md |
 | `/context` | ChatGPT reloads project files |
-| `/note [text]` | Saves to BACKLOG.md |
+| `/task [text]` | Saves to TASKS.md |
 
 ## License
 
