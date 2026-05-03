@@ -14,27 +14,30 @@ Connect ChatGPT to Claude Code via MCP. ChatGPT acts as your AI project manager 
 
 ## Setup
 
-Clone this repo, then open it in Claude Code:
+**Step 1 — Clone and install:**
 
 ```bash
 git clone https://github.com/SRHSoulja/chatgpt-pm-mcp
 cd chatgpt-pm-mcp
+bash install.sh
+```
+
+`install.sh` copies the `/chatgpt-pm-setup` and `/chatgpt-session` slash commands into Claude Code globally.
+
+**Step 2 — Go to your project and run the setup wizard:**
+
+```bash
+cd /path/to/your/project   # your existing project
+# OR: cd ~/chatgpt-pm-mcp/demo   # included demo if you have no project yet
 claude
+/chatgpt-pm-setup
 ```
 
-Claude Code will read `CLAUDE.md` and walk you through the full setup interactively — project path, ngrok, ChatGPT configuration, and your first session.
+The `/chatgpt-pm-setup` wizard walks you through everything — dependencies, .env, CLAUDE.md safety check, ChatGPT Project setup, ngrok, and your first session.
 
-**If Claude Code doesn't automatically begin setup**, paste this:
-
-```
-Read CLAUDE.md and README.md. I am setting this up from a clean local repo.
-Walk me through the setup step by step.
-If I do not already have a project, use demo/ as the project path.
-```
-
-**Which project path to use:**
-- **Have an existing project?** Point the wizard to that folder (e.g. `/home/you/myproject`)
-- **Starting fresh or just testing?** Use `demo/` — it's a generic Express API included in this repo with sample tasks, a resume file, and example prompts. Everything you need for a first session.
+**Which folder to use:**
+- **Have an existing project?** `cd` into it, then run `claude` and `/chatgpt-pm-setup`
+- **No project / just testing?** Use `demo/` — a generic Express API with sample tasks and prompts included in this repo
 
 ## Requirements
 
