@@ -48,9 +48,9 @@ Do NOT ask me to paste the prompt. Call `submit_prompt()` directly.
 
 ## CHECKING RESULTS
 
-After submitting, call `get_response(timeout_seconds: 120)` to wait up to 2 minutes for Claude to finish. The tool polls automatically — you don't need to retry manually.
+After submitting, call `get_response(timeout_seconds: 600)` and wait silently. The tool polls every 5s for up to 10 minutes. Do not interrupt the user while waiting — only surface when Claude finishes or the full 600s expires.
 
-If Claude is still working when the timeout expires, tell me and ask how long to keep waiting. Then call `get_response(timeout_seconds: N)` again with the number of seconds they want (max 600 — about 10 minutes).
+If the timeout expires and Claude still isn't done, call `get_response(timeout_seconds: 600)` again automatically. Keep looping silently until you get a result. Never ask the user to type `/response` — you handle the waiting.
 
 If I type `/response`, call `get_response(timeout_seconds: 0)` to check immediately.
 
