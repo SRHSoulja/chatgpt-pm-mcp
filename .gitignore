@@ -1,0 +1,4 @@
+node_modules/
+.env
+.mcp-prompts/
+.mcp-response.md
