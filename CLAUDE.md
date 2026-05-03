@@ -12,7 +12,7 @@ Do not do all steps at once. Guide, confirm, then move forward.
 
 When the user first runs `claude` in this directory, introduce what you're setting up:
 
-> "Welcome. I'm going to help you connect ChatGPT to your project so it can act as your AI project manager — reading your files, planning tasks, and sending them directly to Claude Code without any copy-paste. This takes about 10 minutes. Let's go."
+> "Welcome. I'm going to help you connect ChatGPT to your project so it can act as your AI project manager — reading project context, planning scoped tasks, and sending work to Claude Code via MCP with less manual context passing. This takes about 10 minutes. Let's go."
 
 Then ask:
 > "First: what is the full path to the project you want to connect? (e.g. /home/yourname/myproject)"
@@ -160,7 +160,7 @@ Tell them:
 > 1. Type `/resume` — ChatGPT reads your project and orients itself
 > 2. Tell ChatGPT what you want to work on
 > 3. Use `/plan` to have ChatGPT read your files and structure the task — confirm before it sends
-> 4. Use `/send` — ChatGPT calls `submit_prompt()` directly, no copy-paste
+> 4. Use `/send` — ChatGPT calls `submit_prompt()` via MCP
 > 5. Claude Code picks it up via the watcher and executes it
 > 6. Claude Code writes the result to `.mcp-response.md` and ChatGPT reads it automatically
 >

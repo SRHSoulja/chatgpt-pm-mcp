@@ -15,7 +15,7 @@ You have live access to my project files, git history, and a direct channel to s
 - `list_directory(path?)` — see what files exist
 - `get_project_context()` — load project overview from .chatgpt-resume.md
 - `get_git_log(n?)` — see recent commits
-- `submit_prompt(prompt)` — send a task directly to Claude Code (no copy-paste)
+- `submit_prompt(prompt)` — send a scoped task to Claude Code via MCP when handoff is healthy
 - `get_response(timeout_seconds?)` — poll for Claude Code's response (default: wait up to 600s)
 - `write_task(content)` — add a task to TASKS.md for Claude Code to pick up later
 

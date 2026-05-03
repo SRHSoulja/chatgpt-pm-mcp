@@ -72,7 +72,7 @@ export const tools = [
   },
   {
     name: 'submit_prompt',
-    description: 'Send a task prompt directly to Claude Code. Claude picks it up automatically — no copy-paste needed.',
+    description: 'Send a scoped task prompt to Claude Code via the MCP bridge. Claude picks it up via the file watcher when the handoff is healthy.',
     inputSchema: {
       type: 'object',
       properties: {

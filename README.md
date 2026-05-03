@@ -1,13 +1,13 @@
 # chatgpt-pm-mcp
 
-Connect ChatGPT to Claude Code via MCP. ChatGPT acts as your AI project manager — reading your project files, planning tasks, and submitting them directly to Claude Code. No copy-paste. No manual context passing.
+Connect ChatGPT to Claude Code via MCP. ChatGPT acts as your AI project manager — reading project context, planning scoped tasks, checking the bridge, and sending work to Claude Code when the handoff is healthy. Less copy-paste. Less manual context passing. Clear fallbacks when tools need help.
 
 **Free guide:** [gmgnrepeat.com/chatgpt-pm-mcp](https://gmgnrepeat.com/chatgpt-pm-mcp)
 
 ## What This Does
 
 - ChatGPT reads your project files in real time via MCP tools
-- ChatGPT submits tasks directly to Claude Code via `submit_prompt()`
+- ChatGPT sends scoped tasks to Claude Code via MCP using `submit_prompt()`
 - Claude Code executes and writes results to `.mcp-response.md`
 - ChatGPT reads the result via `get_response()`
 - You are out of the middle
@@ -53,7 +53,7 @@ Once your MCP server is running and exposed via ngrok:
 3. In ChatGPT: /resume                    # ChatGPT reads your project
 4. Tell ChatGPT what you want to work on
 5. /plan [task]                           # ChatGPT reads files, structures task, asks to confirm
-6. /send                                  # ChatGPT calls submit_prompt() — no copy-paste
+6. /send                                  # ChatGPT calls submit_prompt() via MCP
 7. Claude Code picks it up, executes, writes .mcp-response.md
 8. ChatGPT reads the result automatically (polls up to 10 min)
 9. Repeat
@@ -68,7 +68,7 @@ Once your MCP server is running and exposed via ngrok:
 | `list_directory` | List files in a directory |
 | `get_project_context` | Load .chatgpt-resume.md / CLAUDE.md / README |
 | `get_git_log` | Recent git commits |
-| `submit_prompt` | Send a task directly to Claude Code |
+| `submit_prompt` | Send a scoped task to Claude Code via the MCP bridge |
 | `get_response` | Poll for Claude Code's response (waits up to 10 min) |
 | `write_task` | Add a task to TASKS.md backlog (does not execute) |
 
