@@ -84,6 +84,22 @@ Once you paste `chatgpt-instructions.md` into your ChatGPT Project:
 | `/context` | ChatGPT reloads project files |
 | `/task [text]` | Saves to TASKS.md backlog |
 
+## Troubleshooting
+
+The workflow is powerful but not perfectly deterministic — tool calls pass through ChatGPT's platform, your MCP server, ngrok, and the Claude Code watcher. Any layer can hiccup.
+
+| Symptom | What to do |
+|---------|-----------|
+| `/check` fails or returns no tools | MCP connection is down — restart `bash start.sh` and reconnect the MCP app in ChatGPT project settings |
+| Approval popup appears | Normal — approve it and continue |
+| Tool call blocked by platform | Simplify/shorten the prompt, remove special characters from file paths, retry |
+| `get_response` times out | Do NOT resubmit — the prompt may have landed. Check `.mcp-prompts/` for a new file, then poll `get_response` again |
+| Duplicate execution | Check status before sending — if Claude is still running, wait |
+| Connector goes stale after restart | In ChatGPT project settings: delete and re-add the MCP app |
+| Nothing works | **Manual fallback:** copy the prompt ChatGPT structured and paste it directly into Claude Code. Summarize the result back to ChatGPT. This always works. |
+
+> Long waits (up to 600s) depend on your MCP client and platform supporting them. The workflow is not guaranteed to send every time — it's a powerful pattern with real-world rough edges.
+
 ## License
 
 MIT
