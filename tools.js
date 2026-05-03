@@ -95,16 +95,41 @@ export const tools = [
   },
   {
     name: 'get_response',
-    description: 'Read Claude Code\'s response to the last submitted prompt.',
-    inputSchema: { type: 'object', properties: {} },
-    handler: () => {
+    description: 'Read Claude Code\'s response to the last submitted prompt. Pass timeout_seconds to poll until ready (max 600).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        timeout_seconds: {
+          type: 'number',
+          description: 'How long to wait for Claude to finish, in seconds (0 = check once, max 600). Default: 0.',
+        },
+      },
+    },
+    handler: async ({ timeout_seconds = 0 }) => {
       const fp = path.join(ROOT, '.mcp-response.md');
-      if (!fs.existsSync(fp)) {
-        return { ready: false, message: 'No response yet. Claude is still working. Try again in 30 seconds.' };
+      const maxWait = Math.min(Math.max(0, timeout_seconds), 600) * 1000;
+      const pollInterval = 5000;
+      const deadline = Date.now() + maxWait;
+
+      const read = () => {
+        if (!fs.existsSync(fp)) return null;
+        const content = fs.readFileSync(fp, 'utf8');
+        const stat = fs.statSync(fp);
+        return { ready: true, response: content, updated: stat.mtime.toISOString() };
+      };
+
+      const result = read();
+      if (result || maxWait === 0) {
+        return result || { ready: false, message: 'No response yet. Claude is still working.' };
       }
-      const content = fs.readFileSync(fp, 'utf8');
-      const stat = fs.statSync(fp);
-      return { ready: true, response: content, updated: stat.mtime.toISOString() };
+
+      while (Date.now() < deadline) {
+        await new Promise(r => setTimeout(r, pollInterval));
+        const r = read();
+        if (r) return r;
+      }
+
+      return { ready: false, message: `Timed out after ${timeout_seconds}s. Claude may still be working — call get_response() again to check.` };
     },
   },
   {

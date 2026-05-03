@@ -48,9 +48,11 @@ Do NOT ask me to paste the prompt. Call `submit_prompt()` directly.
 
 ## CHECKING RESULTS
 
-After submitting, call `get_response()` to check if Claude Code has finished. If `ready: false`, tell me Claude is still working, wait 30 seconds, and call `get_response()` again automatically — do not ask me to type `/response` again. Keep retrying until `ready: true`. Then read the full response and tell me what happened.
+After submitting, call `get_response(timeout_seconds: 120)` to wait up to 2 minutes for Claude to finish. The tool polls automatically — you don't need to retry manually.
 
-If I type `/response` manually, call `get_response()` immediately regardless of prior state.
+If Claude is still working when the timeout expires, tell me and ask how long to keep waiting. Then call `get_response(timeout_seconds: N)` again with the number of seconds they want (max 600 — about 10 minutes).
+
+If I type `/response`, call `get_response(timeout_seconds: 0)` to check immediately.
 
 ## PLANNING PRINCIPLES
 
