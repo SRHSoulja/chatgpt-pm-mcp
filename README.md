@@ -24,7 +24,17 @@ claude
 
 Claude Code will read `CLAUDE.md` and walk you through the full setup interactively — project path, ngrok, ChatGPT configuration, and your first session.
 
-> **No existing project?** Use the `demo/` folder included in this repo as your starting point. It's a generic Express API with sample tasks, a resume file, and example prompts — everything you need to run a first session without an existing codebase. When the setup wizard asks for your project path, point it to `demo/`.
+**If Claude Code doesn't automatically begin setup**, paste this:
+
+```
+Read CLAUDE.md and README.md. I am setting this up from a clean local repo.
+Walk me through the setup step by step.
+If I do not already have a project, use demo/ as the project path.
+```
+
+**Which project path to use:**
+- **Have an existing project?** Point the wizard to that folder (e.g. `/home/you/myproject`)
+- **Starting fresh or just testing?** Use `demo/` — it's a generic Express API included in this repo with sample tasks, a resume file, and example prompts. Everything you need for a first session.
 
 ## Requirements
 
