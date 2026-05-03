@@ -17,12 +17,14 @@ Connect ChatGPT to Claude Code via MCP. ChatGPT acts as your AI project manager 
 Clone this repo, then open it in Claude Code:
 
 ```bash
-git clone https://github.com/gmgnrepeat/chatgpt-pm-mcp
+git clone https://github.com/SRHSoulja/chatgpt-pm-mcp
 cd chatgpt-pm-mcp
 claude
 ```
 
 Claude Code will read `CLAUDE.md` and walk you through the full setup interactively — project path, ngrok, ChatGPT configuration, and your first session.
+
+> **No existing project?** Use the `demo/` folder included in this repo as your starting point. It's a generic Express API with sample tasks, a resume file, and example prompts — everything you need to run a first session without an existing codebase. When the setup wizard asks for your project path, point it to `demo/`.
 
 ## Requirements
 
