@@ -2,3 +2,8 @@ node_modules/
 .env
 .mcp-prompts/
 .mcp-response.md
+.server.pid
+.ngrok.pid
+.server.log
+.ngrok.log
+TASKS.md
