@@ -127,38 +127,45 @@ Type `/response` to read what Claude Code just did.
 
 Tell them: "I've written `.chatgpt-resume.md` to your project. ChatGPT will read this when you type `/resume`."
 
-### Step 8 — Watcher Setup
+### Step 8 — Install the Session Skill
+
+Do the following automatically (no user input needed):
+
+1. Create `.claude/commands/` in the user's PROJECT ROOT (the path from Step 2)
+2. Copy `.claude/commands/chatgpt-session.md` from THIS repo into that directory
+3. Update the watcher path inside the copied file to use the absolute path to watcher.sh in this repo
 
 Tell them:
-> "Last step: start the file watcher in Claude Code so it picks up tasks from ChatGPT automatically.
->
-> In your project directory, run Claude Code and then run:
-> ```
-> bash [PATH_TO_THIS_REPO]/watcher.sh
-> ```
->
-> Or add this to your project's CLAUDE.md:
-> ```
-> To receive tasks from ChatGPT, run: bash ~/chatgpt-pm-mcp/watcher.sh
-> ```
->
-> When ChatGPT calls `submit_prompt()`, a prompt file will appear in `.mcp-prompts/`. The watcher will display it. Execute the task, then write your summary to `.mcp-response.md` so ChatGPT can read it."
+> "I've installed a `/chatgpt-session` skill into your project. When you open Claude Code in your project, just type `/chatgpt-session` and it will start the watcher and put Claude Code into PM executor mode automatically."
 
 ### Step 9 — First Session
 
 Tell them:
 > "You're set up. Here's how to run your first session:
 >
-> 1. Start the MCP server: `npm start` (in this directory)
-> 2. Start ngrok: `ngrok http 3333`
-> 3. Open Claude Code in your project: `claude`
-> 4. Start the watcher: `bash ~/chatgpt-pm-mcp/watcher.sh`
-> 5. Open your ChatGPT Project
-> 6. Type `/resume` — ChatGPT will read your project and orient itself
-> 7. Tell ChatGPT what you want to work on
-> 8. ChatGPT plans the task and calls `submit_prompt()` automatically
-> 9. Claude Code picks it up, executes, writes to `.mcp-response.md`
-> 10. Type `/response` in ChatGPT to see what happened
+> **Terminal 1 — MCP server:**
+> ```
+> cd ~/chatgpt-pm-mcp && npm start
+> ```
+>
+> **Terminal 2 — ngrok:**
+> ```
+> ngrok http 3333
+> ```
+>
+> **Terminal 3 — your project:**
+> ```
+> cd [YOUR PROJECT PATH] && claude
+> ```
+> Then type: `/chatgpt-session`
+>
+> **In ChatGPT:**
+> 1. Type `/resume` — ChatGPT reads your project and orients itself
+> 2. Tell ChatGPT what you want to work on
+> 3. ChatGPT plans the task and calls `submit_prompt()` directly
+> 4. Claude Code picks it up via the watcher and executes it
+> 5. Claude Code writes the result to `.mcp-response.md`
+> 6. Type `/response` in ChatGPT to see what happened
 >
 > You're out of the middle. Good luck — ship something."
 
