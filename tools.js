@@ -147,4 +147,22 @@ export const tools = [
       return { written: true, file: 'TASKS.md' };
     },
   },
+  {
+    name: 'get_commands',
+    description: 'List all available MCP tools, what they do, and how to use them. Call this to verify the MCP connection is working and to tell the user what you can do.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => ({
+      tools: [
+        { name: 'read_file', usage: 'read_file(path)', description: 'Read any project file. Use relative paths from project root.' },
+        { name: 'list_directory', usage: 'list_directory(path?)', description: 'List files in a directory. Defaults to project root.' },
+        { name: 'get_project_context', usage: 'get_project_context()', description: 'Load project overview from .chatgpt-resume.md, CLAUDE.md, or README. Call at session start.' },
+        { name: 'get_git_log', usage: 'get_git_log(n?)', description: 'Get recent git commits. Default 10.' },
+        { name: 'write_task', usage: 'write_task(content)', description: 'Save a task idea to TASKS.md backlog. Does NOT execute anything — use submit_prompt to act.' },
+        { name: 'submit_prompt', usage: 'submit_prompt(prompt)', description: 'Send a self-contained task to Claude Code. Claude picks it up via the file watcher and executes it.' },
+        { name: 'get_response', usage: 'get_response(timeout_seconds?)', description: 'Poll for Claude Code\'s response. Waits up to timeout_seconds (default 600, max 600). If timed_out, do NOT resubmit — call again to keep polling.' },
+        { name: 'get_commands', usage: 'get_commands()', description: 'This tool. Returns all available tools and usage.' },
+      ],
+      note: 'If you can read this, the MCP connection is working. Tell the user which tools are available and that you are ready to start.',
+    }),
+  },
 ];
