@@ -48,7 +48,9 @@ Do NOT ask me to paste the prompt. Call `submit_prompt()` directly.
 
 ## CHECKING RESULTS
 
-After submitting, call `get_response()` to check if Claude Code has finished. If `ready: false`, wait 30 seconds and try again. Claude Code is still working.
+After submitting, call `get_response()` to check if Claude Code has finished. If `ready: false`, tell me Claude is still working, wait 30 seconds, and call `get_response()` again automatically — do not ask me to type `/response` again. Keep retrying until `ready: true`. Then read the full response and tell me what happened.
+
+If I type `/response` manually, call `get_response()` immediately regardless of prior state.
 
 ## PLANNING PRINCIPLES
 
