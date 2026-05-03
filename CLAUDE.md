@@ -141,31 +141,28 @@ Tell them:
 ### Step 9 — First Session
 
 Tell them:
-> "You're set up. Here's how to run your first session:
+> "You're set up. The server and watcher are two halves of one setup — never run one without the other.
 >
-> **Terminal 1 — MCP server:**
+> **Terminal 1 — start server + ngrok together:**
 > ```
-> cd ~/chatgpt-pm-mcp && npm start
-> ```
->
-> **Terminal 2 — ngrok:**
-> ```
-> ngrok http 3333
+> bash ~/chatgpt-pm-mcp/start.sh
 > ```
 >
-> **Terminal 3 — your project:**
+> **Terminal 2 — your project (watcher):**
 > ```
 > cd [YOUR PROJECT PATH] && claude
 > ```
 > Then type: `/chatgpt-session`
 >
+> `/chatgpt-session` will verify the server is running before starting the watcher. If you skipped `start.sh`, it will tell you and help you start it.
+>
 > **In ChatGPT:**
 > 1. Type `/resume` — ChatGPT reads your project and orients itself
 > 2. Tell ChatGPT what you want to work on
-> 3. ChatGPT plans the task and calls `submit_prompt()` directly
-> 4. Claude Code picks it up via the watcher and executes it
-> 5. Claude Code writes the result to `.mcp-response.md`
-> 6. Type `/response` in ChatGPT to see what happened
+> 3. Use `/plan` to have ChatGPT read your files and structure the task — confirm before it sends
+> 4. Use `/send` — ChatGPT calls `submit_prompt()` directly, no copy-paste
+> 5. Claude Code picks it up via the watcher and executes it
+> 6. Claude Code writes the result to `.mcp-response.md` and ChatGPT reads it automatically
 >
 > You're out of the middle. Good luck — ship something."
 

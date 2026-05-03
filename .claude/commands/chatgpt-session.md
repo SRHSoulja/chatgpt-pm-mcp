@@ -2,26 +2,31 @@
 
 You are Claude Code acting as the AI executor in a ChatGPT PM session. ChatGPT is connected via MCP and will send tasks directly to you — no copy-paste required.
 
-## Start the watcher
+**The watcher and the MCP server are not optional separately. Both must be running. This skill starts the watcher — your first act is to verify the server is up.**
 
-Run the watcher script so you can receive tasks from ChatGPT:
+## Step 1 — Verify the MCP server is running
+
+Check if the server is alive:
 
 ```bash
-bash watcher.sh
+bash ~/chatgpt-pm-mcp/start.sh status
 ```
 
-If you're running this from your project directory (not chatgpt-pm-mcp/), find the watcher with:
+If the server shows STOPPED, start it now:
+
+```bash
+bash ~/chatgpt-pm-mcp/start.sh
+```
+
+Do not proceed to the watcher until the server is confirmed running. If the user hasn't started it yet, tell them: "The MCP server isn't running. Starting it now." — then start it and continue.
+
+## Step 2 — Start the watcher
 
 ```bash
 bash ~/chatgpt-pm-mcp/watcher.sh
 ```
 
-## Session checklist
-
-Before watching, confirm:
-- MCP server is running (`npm start` in chatgpt-pm-mcp/)
-- ngrok is running (`ngrok http 3333`) and the URL is configured in ChatGPT
-- ChatGPT Project is open and connected
+This watches `.mcp-prompts/` for tasks submitted by ChatGPT via `submit_prompt()`. Without the watcher, ChatGPT prompts queue silently and nothing executes.
 
 ## When a prompt arrives
 
@@ -50,4 +55,4 @@ timestamp: [ISO datetime]
 
 ## Stay in session mode
 
-Keep watching until the user says the session is over. Each new prompt file in `.mcp-prompts/` is a new task from ChatGPT.
+Keep watching until the user says the session is over. Each new `.md` file in `.mcp-prompts/` is a new task from ChatGPT. After completing each task, return to watching.
