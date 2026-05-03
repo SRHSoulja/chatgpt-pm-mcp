@@ -86,19 +86,31 @@ Once you paste `chatgpt-instructions.md` into your ChatGPT Project:
 
 ## Troubleshooting
 
-The workflow is powerful but not perfectly deterministic — tool calls pass through ChatGPT's platform, your MCP server, ngrok, and the Claude Code watcher. Any layer can hiccup.
+The workflow passes through four stages. A prompt can fail at any one — use `check_handoff_status()` to see exactly where things stand before resubmitting.
+
+**The four handoff stages:**
+1. **Platform dispatch** — ChatGPT sent the tool call (approval popup = normal; block = fail here)
+2. **Prompt file written** — MCP server wrote to `.mcp-prompts/` (verifiable via `check_handoff_status`)
+3. **Claude picked it up** — file watcher in Claude Code noticed the file (can fail if watcher stopped)
+4. **Response produced** — Claude executed and wrote `.mcp-response.md`
+
+`safe_to_send: true` only means no prompt file is pending — it does **not** mean Claude received anything.
+
+Ask ChatGPT: `Check handoff status. Did my last prompt reach Claude Code?`
 
 | Symptom | What to do |
 |---------|-----------|
-| `/check` fails or returns no tools | MCP connection is down — restart `bash start.sh` and reconnect the MCP app in ChatGPT project settings |
-| Approval popup appears | Normal — approve it and continue |
-| Tool call blocked by platform | Simplify/shorten the prompt, remove special characters from file paths, retry |
-| `get_response` times out | Do NOT resubmit — the prompt may have landed. Check `.mcp-prompts/` for a new file, then poll `get_response` again |
-| Duplicate execution | Check status before sending — if Claude is still running, wait |
-| Connector goes stale after restart | In ChatGPT project settings: delete and re-add the MCP app |
-| Nothing works | **Manual fallback:** copy the prompt ChatGPT structured and paste it directly into Claude Code. Summarize the result back to ChatGPT. This always works. |
+| `/check` fails | MCP connection down — restart `bash start.sh`, reconnect MCP app in ChatGPT project settings |
+| Approval popup appears | Normal — approve and continue |
+| Tool call blocked by platform | Simplify the prompt, remove special characters, retry |
+| Prompt approved but nothing in Claude | Call `check_handoff_status` — if prompt file exists but no response, the watcher may have stopped. In Claude Code: `/chatgpt-session` |
+| `get_response` times out | Do NOT resubmit — call `check_handoff_status` first. If prompt file exists, Claude may still be working; keep polling |
+| Status says running / safe_to_send false | Wait — Claude is executing. Poll `get_response`, do not send again |
+| Duplicate execution risk | Always call `check_handoff_status` before sending — if pending_prompt_count > 0, wait |
+| Connector stale after restart | Delete and re-add the MCP app in ChatGPT project settings |
+| Nothing works | **Manual fallback:** copy ChatGPT's structured prompt into Claude Code directly. Summarize result back. Always works. |
 
-> Long waits (up to 600s) depend on your MCP client and platform supporting them. The workflow is not guaranteed to send every time — it's a powerful pattern with real-world rough edges.
+> Long waits (up to 600s) depend on platform support. This is a powerful pattern with real-world rough edges — the checklist above covers the common ones.
 
 ## License
 

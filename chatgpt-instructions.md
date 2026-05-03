@@ -39,6 +39,23 @@ When I type `/context` — call `list_directory()` and `get_project_context()` t
 
 When I type `/task [text]` — call `write_task()` to add it to TASKS.md for later.
 
+## BEFORE RESUBMITTING — CHECK HANDOFF STATUS
+
+Before sending a new prompt, call `check_handoff_status()`. It tells you exactly where the pipeline stands:
+
+- **bridge_state: idle_clean** — safe to send, nothing pending
+- **bridge_state: prompt_pending_no_response** — a prompt was written but Claude hasn't responded yet. Do NOT resubmit. Wait and poll `get_response()`. If Claude still doesn't react after a few minutes, the watcher may need restarting — tell the user: "Your Claude Code watcher may have stopped. In Claude Code, run `/chatgpt-session` to restart it."
+- **bridge_state: prompt_pending_with_response** — prior response exists. Read it with `get_response()` before doing anything.
+- **bridge_state: idle_with_prior_response** — ready to send.
+
+The MCP handoff has four stages. A prompt can fail at any one:
+1. **Platform dispatch** — ChatGPT sent the tool call (approval popup = normal, block = fail here)
+2. **Prompt file written** — MCP server wrote to `.mcp-prompts/` (check via `check_handoff_status`)
+3. **Claude picked it up** — the file watcher in Claude Code noticed the file (can fail if watcher stopped)
+4. **Response produced** — Claude executed and wrote `.mcp-response.md`
+
+`safe_to_send: true` only means no prompt file is pending. It does NOT mean Claude received or acted on anything.
+
 ## HOW TO SUBMIT TASKS TO CLAUDE CODE
 
 When submitting via `submit_prompt()`, every prompt must be completely self-contained. Claude Code has no memory of this conversation. Include:

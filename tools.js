@@ -161,8 +161,72 @@ export const tools = [
         { name: 'submit_prompt', usage: 'submit_prompt(prompt)', description: 'Send a self-contained task to Claude Code. Claude picks it up via the file watcher and executes it.' },
         { name: 'get_response', usage: 'get_response(timeout_seconds?)', description: 'Poll for Claude Code\'s response. Waits up to timeout_seconds (default 600, max 600). If timed_out, do NOT resubmit — call again to keep polling.' },
         { name: 'get_commands', usage: 'get_commands()', description: 'This tool. Returns all available tools and usage.' },
+        { name: 'check_handoff_status', usage: 'check_handoff_status()', description: 'Check handoff health. Shows pending prompts, response state, and what to do next. Call before resubmitting.' },
       ],
       note: 'If you can read this, the MCP connection is working. Tell the user which tools are available and that you are ready to start.',
     }),
+  },
+  {
+    name: 'check_handoff_status',
+    description: 'Check the health of the ChatGPT → MCP → Claude Code handoff. Use this before resubmitting a prompt to understand exactly where the pipeline stands.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => {
+      const promptDir = path.join(ROOT, '.mcp-prompts');
+      const responseFile = path.join(ROOT, '.mcp-response.md');
+
+      // Check for pending prompt files
+      let pendingPrompts = [];
+      if (fs.existsSync(promptDir)) {
+        pendingPrompts = fs.readdirSync(promptDir)
+          .filter(f => f.endsWith('.md'))
+          .map(f => {
+            const fp = path.join(promptDir, f);
+            return { file: f, written_at: fs.statSync(fp).mtime.toISOString() };
+          })
+          .sort((a, b) => b.written_at.localeCompare(a.written_at));
+      }
+
+      // Check response file
+      let lastResponse = null;
+      if (fs.existsSync(responseFile)) {
+        const stat = fs.statSync(responseFile);
+        lastResponse = { exists: true, updated_at: stat.mtime.toISOString() };
+      }
+
+      const hasPending = pendingPrompts.length > 0;
+      const hasResponse = lastResponse !== null;
+
+      let bridge_state, recommended_action;
+      if (!hasPending && !hasResponse) {
+        bridge_state = 'idle_clean';
+        recommended_action = 'Ready to send. No pending prompts and no prior response. Submit a new prompt.';
+      } else if (hasPending && !hasResponse) {
+        bridge_state = 'prompt_pending_no_response';
+        recommended_action = 'A prompt was written to .mcp-prompts/ but Claude has not responded yet. Wait and call get_response(), or check that the watcher is running in Claude Code (/chatgpt-session). Do NOT resubmit.';
+      } else if (hasPending && hasResponse) {
+        bridge_state = 'prompt_pending_with_response';
+        recommended_action = 'A prompt file exists AND a response file exists. Claude may have processed a prior prompt. Call get_response() to read it before deciding whether to send anything new.';
+      } else {
+        bridge_state = 'idle_with_prior_response';
+        recommended_action = 'No pending prompts. A prior response exists. Ready to send a new prompt.';
+      }
+
+      return {
+        bridge_state,
+        safe_to_send: !hasPending,
+        pending_prompts: pendingPrompts,
+        pending_prompt_count: pendingPrompts.length,
+        last_prompt_file: pendingPrompts[0]?.file || null,
+        last_prompt_time: pendingPrompts[0]?.written_at || null,
+        last_response: lastResponse,
+        recommended_action,
+        handoff_stages: {
+          '1_platform_dispatch': 'Cannot verify from here — if this tool responded, the MCP connection is alive',
+          '2_prompt_file_written': hasPending ? `YES — ${pendingPrompts.length} file(s) in .mcp-prompts/` : 'No pending files',
+          '3_claude_picked_up': 'Cannot verify directly — check with the user if Claude Code is showing the watcher prompt',
+          '4_response_produced': hasResponse ? `YES — response file exists (${lastResponse.updated_at})` : 'Not yet',
+        },
+      };
+    },
   },
 ];
