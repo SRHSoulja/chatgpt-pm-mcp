@@ -81,7 +81,13 @@ cp [MCP_REPO]/.env.example [MCP_REPO]/.env
 
 Write `PROJECT_ROOT` to the `.env` file with the current target project path (use `pwd`).
 
-Tell the user: "Set PROJECT_ROOT=[current path] in [MCP_REPO]/.env. Does that look right?"
+Then ask:
+> "Do you have a free ngrok static domain? If yes, paste it here (e.g. `your-name.ngrok-free.app`) and your tunnel URL will never change between restarts. If you don't have one yet, you can get one free at **dashboard.ngrok.com/domains** — one per account, takes 30 seconds. Or type **skip** to use a random URL for now (you can add it to `.env` later as `NGROK_DOMAIN=your-domain`)."
+
+- If they provide a domain: write `NGROK_DOMAIN=[their domain]` to the `.env` file. Tell them: "Set. Your tunnel URL will always be `https://[their domain]` — the ChatGPT connector will never need updating."
+- If they type **skip**: leave `NGROK_DOMAIN` unset. Tell them: "OK — ngrok will generate a random URL each restart. You'll need to recreate the ChatGPT MCP connector each time. You can fix this later by adding `NGROK_DOMAIN=your-domain` to `[MCP_REPO]/.env`."
+
+Tell the user: "PROJECT_ROOT set to [current path]. Does that look right?"
 
 Wait for confirmation.
 

@@ -27,6 +27,12 @@ Wait for confirmation. If no, ask for the correct path.
 
 Write `PROJECT_ROOT=[current path]` to `[MCP_REPO]/.env`.
 
+Check if `NGROK_DOMAIN` is already set in `[MCP_REPO]/.env`. If it is, confirm it to the user and move on. If it is NOT set, ask:
+> "Your tunnel URL changes every restart unless you set a static domain. Do you have a free ngrok static domain? Paste it here (e.g. `your-name.ngrok-free.app`) or type **skip**. Get one free at dashboard.ngrok.com/domains."
+
+- If they provide a domain: write `NGROK_DOMAIN=[their domain]` to `.env`.
+- If they skip: leave it unset and note they can add it later.
+
 Tell the user: "Updated PROJECT_ROOT to [path]."
 
 ---
