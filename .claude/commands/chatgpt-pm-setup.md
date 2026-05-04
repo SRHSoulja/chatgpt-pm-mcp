@@ -181,9 +181,13 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: MISSING"
 > ngrok config add-authtoken YOUR_TOKEN_HERE
 > ```
 >
-> Once ngrok is installed and authenticated, run `start.sh` and then continue setup."
+> Once ngrok is installed and authenticated, open a new terminal and run:
+> ```bash
+> bash [MCP_REPO]/start.sh
+> ```
+> Then come back here and type **done** to continue."
 
-Wait for the user to confirm ngrok is installed. Do not proceed to Step 9 until they confirm.
+Wait for the user to type "done". Do not proceed to Step 9 until they confirm.
 
 **If ngrok is installed**, tell the user:
 > "Start the server and ngrok now. In a new terminal, run:
