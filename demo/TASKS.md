@@ -16,5 +16,11 @@ File: routes/users.js — GET /:id
 Should return HTTP 404 with { "error": "User not found" } when not found.
 
 ## Task 3 — Add a test for the rate limiter
-Write a basic integration test for the auth rate limiting using supertest.
-Verify the 11th request within 15 minutes returns HTTP 429.
+Write a basic integration test for the auth rate limiting using supertest and Node's built-in test runner.
+
+To do this properly, Claude Code will need to:
+- Split app.js into app.js (exports the Express app) and server.js (starts the listener)
+- Add supertest as a dev dependency
+- Write a test file that sends 11 login requests and verifies the last returns HTTP 429
+
+Explicitly authorized: refactoring the app.js/server.js split, adding supertest, adding a test script to package.json.

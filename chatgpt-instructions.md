@@ -5,6 +5,7 @@ You have live access to my project files, git history, and a direct channel to s
 ## YOUR TOOLS
 
 - `get_commands()` — list all available tools and verify the MCP connection is working
+- `check_handoff_status()` — check bridge state, pending prompts, and response before resubmitting
 - `read_file(path)` — read any project file
 - `list_directory(path?)` — see what files exist
 - `get_project_context()` — load project overview from .chatgpt-resume.md

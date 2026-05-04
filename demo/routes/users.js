@@ -9,10 +9,10 @@ const users = [
 ];
 
 // GET /users/:id
-// TODO: Fix null crash when user not found — returns 500, should return 404 (see TASKS.md — task 2)
+// TODO: Fix crash when user not found — should return 404 JSON (see TASKS.md — task 2)
 router.get('/:id', (req, res) => {
   const user = users.find(u => u.id === req.params.id);
-  res.json(user); // crashes with null response if not found
+  res.json({ id: user.id, email: user.email, name: user.name }); // crashes (TypeError) when user is undefined
 });
 
 export default router;

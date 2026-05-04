@@ -21,9 +21,16 @@ emit() {
   echo "[watcher] prompt arrived: $(basename "$filepath")"
 }
 
+# Drain any prompt files that arrived before the watcher started
+# so restarting /chatgpt-session actually rescues a pending prompt
+find "$PROMPT_DIR" -maxdepth 1 -name '*.md' -type f -print0 2>/dev/null \
+  | sort -z | while IFS= read -r -d '' fp; do
+    emit "$fp"
+  done
+
 if command -v inotifywait &>/dev/null; then
   # Linux/WSL: inotify-based (instant)
-  inotifywait -m -e create "$PROMPT_DIR" --format '%f' 2>/dev/null | while read -r f; do
+  inotifywait -m -e create,moved_to "$PROMPT_DIR" --format '%f' 2>/dev/null | while read -r f; do
     [[ "$f" == *.md ]] && emit "$PROMPT_DIR/$f"
   done
 elif command -v fswatch &>/dev/null; then

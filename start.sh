@@ -12,6 +12,11 @@ PIDFILE_SERVER="$SCRIPT_DIR/.server.pid"
 PIDFILE_NGROK="$SCRIPT_DIR/.ngrok.pid"
 NGROK_URL_TIMEOUT=20  # seconds to wait for tunnel URL
 
+# Load .env so NGROK_DOMAIN, PORT, and PROJECT_ROOT are available
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+  set -a; source "$SCRIPT_DIR/.env"; set +a
+fi
+
 # Portable ngrok lookup — never hardcode a path
 NGROK_BIN="$(command -v ngrok || true)"
 
@@ -111,8 +116,12 @@ start_ngrok() {
     return
   fi
 
-  # Kill any orphaned ngrok processes not tracked by pidfile
-  pkill -f "ngrok http" 2>/dev/null || true
+  # Kill only the previously tracked ngrok PID — never broad-kill other tunnels
+  if [[ -f "$PIDFILE_NGROK" ]]; then
+    local old_pid; old_pid=$(cat "$PIDFILE_NGROK")
+    kill "$old_pid" 2>/dev/null || true
+    rm -f "$PIDFILE_NGROK"
+  fi
   sleep 0.3
 
   # Clear old log

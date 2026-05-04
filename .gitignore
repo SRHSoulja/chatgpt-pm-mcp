@@ -9,6 +9,7 @@ node_modules/
 .ngrok.log
 TASKS.md
 
+.mcp-responses/
+
 # Allow demo versions of runtime files so users have examples to learn from
 !demo/TASKS.md
-!demo/.mcp-response.md

@@ -2,11 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
-const ROOT = process.env.PROJECT_ROOT || process.cwd();
+const ROOT = path.resolve(process.env.PROJECT_ROOT || process.cwd());
 
 function safePath(p) {
   const resolved = path.resolve(ROOT, p);
-  if (!resolved.startsWith(ROOT)) throw new Error('Path outside project root');
+  const rel = path.relative(ROOT, resolved);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    throw new Error('Path outside project root');
+  }
   return resolved;
 }
 
@@ -83,9 +86,36 @@ export const tools = [
     handler: ({ prompt }) => {
       const promptDir = path.join(ROOT, '.mcp-prompts');
       fs.mkdirSync(promptDir, { recursive: true });
+
+      // Refuse if a prompt is already pending — avoids duplicate execution
+      const pending = fs.existsSync(promptDir)
+        ? fs.readdirSync(promptDir).filter(f => f.endsWith('.md'))
+        : [];
+      if (pending.length > 0) {
+        return {
+          submitted: false,
+          bridge_state: 'prompt_pending_no_response',
+          pending_prompt_count: pending.length,
+          recommended_action: 'A prompt is already pending. Call check_handoff_status() to see where it stands, then call get_response() to wait for the result. Do NOT resubmit until the bridge is idle_clean.',
+        };
+      }
+
+      // Archive any prior response so get_response() won't return stale content
+      const responseFile = path.join(ROOT, '.mcp-response.md');
+      if (fs.existsSync(responseFile)) {
+        const archiveDir = path.join(ROOT, '.mcp-responses');
+        fs.mkdirSync(archiveDir, { recursive: true });
+        const archiveName = `${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
+        fs.renameSync(responseFile, path.join(archiveDir, archiveName));
+      }
+
+      // Atomic write: .tmp → rename so watcher never reads a partial file
       const filename = `${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
       const fp = path.join(promptDir, filename);
-      fs.writeFileSync(fp, prompt);
+      const tmp = `${fp}.tmp`;
+      fs.writeFileSync(tmp, prompt);
+      fs.renameSync(tmp, fp);
+
       return {
         submitted: true,
         file: filename,
@@ -105,7 +135,7 @@ export const tools = [
         },
       },
     },
-    handler: async ({ timeout_seconds = 0 }) => {
+    handler: async ({ timeout_seconds = 600 }) => {
       const fp = path.join(ROOT, '.mcp-response.md');
       const maxWait = Math.min(Math.max(0, timeout_seconds), 600) * 1000;
       const pollInterval = 5000;
@@ -159,7 +189,7 @@ export const tools = [
         { name: 'get_git_log', usage: 'get_git_log(n?)', description: 'Get recent git commits. Default 10.' },
         { name: 'write_task', usage: 'write_task(content)', description: 'Save a task idea to TASKS.md backlog. Does NOT execute anything — use submit_prompt to act.' },
         { name: 'submit_prompt', usage: 'submit_prompt(prompt)', description: 'Send a self-contained task to Claude Code. Claude picks it up via the file watcher and executes it.' },
-        { name: 'get_response', usage: 'get_response(timeout_seconds?)', description: 'Poll for Claude Code\'s response. Waits up to timeout_seconds (default 600, max 600). If timed_out, do NOT resubmit — call again to keep polling.' },
+        { name: 'get_response', usage: 'get_response(timeout_seconds?)', description: 'Poll for Claude Code\'s response. Default 600s (10 min), max 600. Polls every 5s silently. If timed out, do NOT resubmit — call again to keep polling.' },
         { name: 'get_commands', usage: 'get_commands()', description: 'This tool. Returns all available tools and usage.' },
         { name: 'check_handoff_status', usage: 'check_handoff_status()', description: 'Check handoff health. Shows pending prompts, response state, and what to do next. Call before resubmitting.' },
       ],

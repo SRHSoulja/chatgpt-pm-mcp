@@ -38,13 +38,13 @@ cd chatgpt-pm-mcp
 bash install.sh
 ```
 
-`install.sh` does two things:
+`install.sh` does three things:
 - Saves the repo path to `~/.chatgpt-pm-mcp/repo-path` so the setup wizard can find it later — no matter where you cloned it
-- Copies `/chatgpt-pm-setup` and `/chatgpt-session` into Claude Code globally (`~/.claude/commands/`)
+- Copies `/chatgpt-pm-setup`, `/chatgpt-session`, and `/chatgpt-switch-project` into Claude Code globally (`~/.claude/commands/`)
 
 **You only run `install.sh` once per machine.** The slash commands are then available in every Claude Code session globally. For each new project, just `cd` into it and run `/chatgpt-pm-setup` — takes about 2 minutes and connects that project to the bridge.
 
-**Step 2 — Go to your project and run the setup wizard:**
+**Step 3 — Go to your project and run the setup wizard:**
 
 ```bash
 cd /path/to/your/project      # your existing project
@@ -185,6 +185,16 @@ Once you paste `chatgpt-instructions.md` into your ChatGPT Project:
 | `/response` | ChatGPT reads .mcp-response.md immediately |
 | `/context` | ChatGPT reloads project files |
 | `/task [text]` | Saves to TASKS.md backlog |
+
+## Security Model
+
+This setup exposes your local machine to a public HTTPS URL via ngrok. Understand what that means before you start:
+
+- **ChatGPT can read any file inside `PROJECT_ROOT`** — keep secrets, credentials, and `.env` files outside the project folder, or at minimum do not point `PROJECT_ROOT` at a directory containing them
+- **`submit_prompt()` is an execution handoff** — it tells Claude Code to run code, write files, and make changes. Treat it with the same care you would giving someone shell access
+- **Don't share your ngrok URL** — anyone with the URL can call your MCP tools
+- **Stop the server when done** — run `bash start.sh stop` when you finish a session; don't leave it running overnight
+- **Auth is None by design** — this is a local personal tool. If you're sharing the server with a team, add bearer token auth to `server.js`
 
 ## Troubleshooting
 
