@@ -6,7 +6,10 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import { tools } from './tools.js';
 
 const app = express();
-app.use(express.json());
+// Do NOT apply express.json() globally — the /messages route must receive the
+// raw body stream so SSEServerTransport.handlePostMessage() can parse it.
+// Apply JSON parsing only to routes that need it (none currently, tools.js
+// arguments arrive via MCP JSON-RPC, not direct POST body).
 
 // CORS — required for ChatGPT to connect
 app.use((req, res, next) => {
