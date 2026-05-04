@@ -200,12 +200,29 @@ Once you have the ngrok URL, tell the user:
 
 > "Now set up the ChatGPT side:
 >
-> 1. **Enable Developer Mode** — ChatGPT Settings → Apps → Advanced Mode → Advanced Settings → Developer Mode ON
-> 2. **Create a new Project** — set memory to **'Project only'** during creation (this option disappears after)
-> 3. **Add MCP app** — Project Settings → Apps → Create App → Name: Project PM → URL: [NGROK_URL]/sse → Auth: None
-> 4. **Paste project instructions** — open `[MCP_REPO]/chatgpt-instructions.md`, copy everything after the divider, paste into your ChatGPT Project instructions
-> 5. **Verify** — in ChatGPT, type: `Check the MCP tools available for this project and tell me what you can do.`
->    ChatGPT will call `get_commands()` and report back. You may not see tools listed in the UI — that's normal.
+> **1. Create a ChatGPT Project**
+> Click **+ New Project** in the ChatGPT sidebar and give it a name.
+>
+> **2. Enable Developer Mode**
+> Inside the project, go to **Settings → Apps**. Toggle **Developer mode** ON.
+> You'll see an 'ELEVATED RISK' warning — this is expected.
+> Leave **'Enforce CSP in developer mode'** OFF (needed for your ngrok tunnel to work).
+>
+> **3. Create the MCP app**
+> With Developer mode on, a **Create app** button appears. Click it and fill out the form:
+> - **Name:** Project PM (or whatever you like)
+> - **MCP Server URL:** [NGROK_URL]/sse
+> - **Authentication:** change the dropdown from OAuth → **None**
+> - Check **'I understand and want to continue'**
+> - Click **Create**
+>
+> **4. Paste project instructions**
+> Open `[MCP_REPO]/chatgpt-instructions.md`, copy everything after the divider, and paste into your ChatGPT Project instructions (Project → Settings → Instructions).
+>
+> **5. Verify the connection**
+> In your ChatGPT Project, type:
+> `Check the MCP tools available for this project and tell me what you can do.`
+> ChatGPT calls `get_commands()` and reports back. You may not see tools listed in the UI — that's normal.
 >
 > Type **connected** when ChatGPT reports the tools."
 

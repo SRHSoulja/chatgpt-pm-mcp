@@ -71,12 +71,22 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 
 **Use the URL printed by start.sh.** The `abc123` above is a placeholder — your real URL will be different. Copy the full `https://...` line and paste it into ChatGPT when creating the MCP app.
 
-1. **Enable Developer Mode** — ChatGPT Settings → Apps → Advanced Mode → Advanced Settings → Developer Mode ON
-2. **Create a new Project** — click + New Project. **Set memory to "Project only" during creation** — this option disappears after.
-3. **Add your MCP app** — Project Settings → Apps → Create App → paste your ngrok URL + `/sse` → Authentication: None → Save
-4. **Paste the project instructions** — copy everything after the divider in `chatgpt-instructions.md` into your ChatGPT Project instructions
-5. **Verify the connection** — in your ChatGPT Project, type: `Check the MCP tools available for this project and tell me what you can do.` ChatGPT will call `get_commands()` and report back. You may not see the tools listed in the UI — that's normal, ChatGPT verifies internally.
-6. **Start your session** — type `/resume` and ChatGPT will read your project context
+1. **Create a ChatGPT Project** — click **+ New Project** in the ChatGPT sidebar. Give it a name.
+
+2. **Enable Developer Mode** — inside the project, go to **Settings → Apps**. Toggle **Developer mode** ON. You'll see an "ELEVATED RISK" warning — this is expected. Leave **"Enforce CSP in developer mode"** OFF (this allows unrestricted network access, which is needed for your ngrok tunnel).
+
+3. **Create the MCP app** — with Developer mode on, a **Create app** button appears. Click it. Fill out the form:
+   - **Name:** Project PM (or anything you like)
+   - **MCP Server URL:** paste your ngrok URL + `/sse` (e.g. `https://abc123.ngrok-free.app/sse`)
+   - **Authentication:** change the dropdown from OAuth → **None**
+   - Check **"I understand and want to continue"**
+   - Click **Create**
+
+4. **Paste the project instructions** — copy everything after the divider in `chatgpt-instructions.md` into your ChatGPT Project instructions (Project → Settings → Instructions).
+
+5. **Verify the connection** — in your ChatGPT Project, type: `Check the MCP tools available for this project and tell me what you can do.` ChatGPT will call `get_commands()` and report back. You may not see the tools listed in the UI — that's normal, ChatGPT verifies through MCP internally.
+
+6. **Start your session** — type `/resume` and ChatGPT will read your project context.
 
 ## Your First Session
 

@@ -61,22 +61,21 @@ Once you have the ngrok URL, tell them:
 
 > "Great. Now set up the ChatGPT side:
 >
-> **1. Enable Developer Mode**
-> - ChatGPT Settings → Apps → Advanced Mode → Advanced Settings
-> - Toggle Developer Mode ON
+> **1. Create a ChatGPT Project**
+> - Click **+ New Project** in the ChatGPT sidebar and name it after your project
 >
-> **2. Create a new Project**
-> - Click + New Project in the ChatGPT sidebar
-> - Name it after your project
-> - IMPORTANT: Set memory to **'Project only'** — this keeps it isolated from other chats. You can only set this during project creation.
+> **2. Enable Developer Mode**
+> - Inside the project, go to **Settings → Apps**
+> - Toggle **Developer mode** ON — you'll see an 'ELEVATED RISK' warning, that's expected
+> - Leave **'Enforce CSP in developer mode'** OFF (needed for your ngrok tunnel)
 >
-> **3. Add your MCP app**
-> - In the project, go to Settings → Apps → Create App
-> - Name: Project PM
-> - MCP Server URL: [THEIR_NGROK_URL]/sse
-> - Authentication: leave as-is (no auth needed)
-> - Check 'I understand and want to continue'
-> - Click Create
+> **3. Create the MCP app**
+> - With Developer mode on, a **Create app** button appears — click it
+> - **Name:** Project PM
+> - **MCP Server URL:** [THEIR_NGROK_URL]/sse
+> - **Authentication:** change the dropdown from OAuth → **None**
+> - Check **'I understand and want to continue'**
+> - Click **Create**
 >
 > **4. Connect Claude Code**
 > Run this in your project directory (not this one):
