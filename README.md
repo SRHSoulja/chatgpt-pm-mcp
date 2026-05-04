@@ -12,9 +12,15 @@ Connect ChatGPT to Claude Code via MCP. ChatGPT acts as your AI project manager 
 - ChatGPT reads the result via `get_response()`
 - You are out of the middle
 
+## Supported Environments
+
+**Linux, macOS, Windows via WSL2.**
+
+Native Windows PowerShell/CMD is not supported. If you are on Windows, install WSL2 (Ubuntu or Debian recommended), then run everything inside your WSL terminal.
+
 ## Setup
 
-**Step 1 — Clone and install:**
+**Step 1 — Clone the repo anywhere and run the installer:**
 
 ```bash
 git clone https://github.com/SRHSoulja/chatgpt-pm-mcp
@@ -22,22 +28,25 @@ cd chatgpt-pm-mcp
 bash install.sh
 ```
 
-`install.sh` copies the `/chatgpt-pm-setup` and `/chatgpt-session` slash commands into Claude Code globally.
+`install.sh` does two things:
+- Saves the repo path to `~/.chatgpt-pm-mcp/repo-path` so the setup wizard can find it later — no matter where you cloned it
+- Copies `/chatgpt-pm-setup` and `/chatgpt-session` into Claude Code globally (`~/.claude/commands/`)
 
 **Step 2 — Go to your project and run the setup wizard:**
 
 ```bash
-cd /path/to/your/project   # your existing project
-# OR: cd ~/chatgpt-pm-mcp/demo   # included demo if you have no project yet
+cd /path/to/your/project      # your existing project
+# OR use the included demo:
+cd /path/where/you/cloned/chatgpt-pm-mcp/demo
 claude
 /chatgpt-pm-setup
 ```
 
-The `/chatgpt-pm-setup` wizard walks you through everything — dependencies, .env, CLAUDE.md safety check, ChatGPT Project setup, ngrok, and your first session.
+The `/chatgpt-pm-setup` wizard walks you through everything — dependency check, .env setup, CLAUDE.md safety check (no silent overwrite), ChatGPT Project setup, ngrok, and your first session. It uses the saved repo path so it doesn't matter where you cloned the repo.
 
 **Which folder to use:**
 - **Have an existing project?** `cd` into it, then run `claude` and `/chatgpt-pm-setup`
-- **No project / just testing?** Use `demo/` — a generic Express API with sample tasks and prompts included in this repo
+- **No project / just testing?** Use the `demo/` folder inside this repo — a generic Express API with sample tasks and prompts
 
 ## Requirements
 
@@ -60,7 +69,7 @@ Once your MCP server is running and exposed via ngrok:
 ## Your First Session
 
 ```
-1. bash ~/chatgpt-pm-mcp/start.sh        # server + ngrok
+1. bash $(cat ~/.chatgpt-pm-mcp/repo-path)/start.sh   # server + ngrok (uses saved repo path)
 2. cd /your/project && claude             # open Claude Code
    /chatgpt-session                       # start watcher + executor mode
 3. In ChatGPT: /resume                    # ChatGPT reads your project
