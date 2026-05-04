@@ -48,7 +48,12 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: not found — ne
 inotifywait --version 2>/dev/null && echo "inotifywait: ok (fast watcher)" || echo "inotifywait: not found — polling fallback will be used (works, slightly slower)"
 ```
 
-- **node/npm missing**: stop and tell the user to install Node.js from nodejs.org, then re-run `/chatgpt-pm-setup`
+- **node/npm missing**: stop and tell the user to run:
+  ```bash
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  sudo apt install -y nodejs
+  ```
+  Then re-run `/chatgpt-pm-setup`.
 - **ngrok not found**: non-blocking — note it is needed in a later step
 - **inotifywait not found**: non-blocking — watcher.sh has a polling fallback that works without it
 

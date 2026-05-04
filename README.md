@@ -20,7 +20,18 @@ Native Windows PowerShell/CMD is not supported. If you are on Windows, install W
 
 ## Setup
 
-**Step 1 — Clone the repo anywhere and run the installer:**
+**Step 1 — Install prerequisites (fresh system only):**
+
+```bash
+sudo apt update && sudo apt install -y git curl
+```
+
+Then install Claude Code:
+```bash
+curl -fsSL https://claude.ai/install.sh | sh
+```
+
+**Step 2 — Clone the repo and run the installer:**
 
 ```bash
 git clone https://github.com/SRHSoulja/chatgpt-pm-mcp
