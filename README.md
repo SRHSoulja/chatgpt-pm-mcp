@@ -70,9 +70,11 @@ claude
 /chatgpt-switch-project
 ```
 
-It will update `PROJECT_ROOT`, create a `.chatgpt-resume.md` if needed, and tell you to restart the server. In ChatGPT, type `/context` to reload the new project's files.
+It will update `PROJECT_ROOT` in `.env`, create a `.chatgpt-resume.md` if needed, and tell you to restart the server. `PROJECT_ROOT` is what controls everything — all 9 tools read and write relative to that path, so changing it is all it takes to point the whole system at a new project.
 
-To keep projects fully separate, create a dedicated ChatGPT Project for each one.
+After restarting the server, type `/context` or `/resume` in ChatGPT to reload the new project's files into context. Same ngrok URL, same MCP connector, same ChatGPT Project — ChatGPT just reads different files now.
+
+To keep projects fully separate, create a dedicated ChatGPT Project for each one and paste the same `chatgpt-instructions.md` into each.
 
 ## Requirements
 
