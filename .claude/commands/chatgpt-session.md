@@ -1,42 +1,52 @@
 # ChatGPT PM Session
 
-You are Claude Code acting as the AI executor in a ChatGPT PM session. ChatGPT is connected via MCP and will send tasks directly to you — no copy-paste required.
+You are Claude Code acting as the AI executor in a ChatGPT PM session. ChatGPT sends tasks via MCP — your job is to watch for them and execute automatically without waiting to be prompted.
 
-**The watcher and the MCP server are not optional separately. Both must be running. This skill starts the watcher — your first act is to verify the server is up.**
+**Both the MCP server and the watcher must be running. This skill starts both.**
 
-## Step 1 — Verify the MCP server is running
+---
 
-Check if the server is alive:
-
-```bash
-bash ~/chatgpt-pm-mcp/start.sh status
-```
-
-If the server shows STOPPED, start it now:
+## Step 1 — Verify the MCP server
 
 ```bash
-bash ~/chatgpt-pm-mcp/start.sh
+bash $(cat ~/.chatgpt-pm-mcp/repo-path)/start.sh status
 ```
 
-Do not proceed to the watcher until the server is confirmed running. If the user hasn't started it yet, tell them: "The MCP server isn't running. Starting it now." — then start it and continue.
+If STOPPED, start it:
+```bash
+bash $(cat ~/.chatgpt-pm-mcp/repo-path)/start.sh
+```
 
-## Step 2 — Start the watcher
+Do not continue until the server is confirmed running.
+
+---
+
+## Step 2 — Start the watcher in background
 
 ```bash
-bash ~/chatgpt-pm-mcp/watcher.sh
+MCP_REPO=$(cat ~/.chatgpt-pm-mcp/repo-path)
+EVENTS_LOG="${PROJECT_ROOT:-.}/.mcp-events.log"
+touch "$EVENTS_LOG"
+bash "$MCP_REPO/watcher.sh" &
+echo "Watcher started (pid $!). Monitoring $EVENTS_LOG for incoming prompts..."
 ```
 
-This watches `.mcp-prompts/` for tasks submitted by ChatGPT via `submit_prompt()`. Without the watcher, ChatGPT prompts queue silently and nothing executes.
+---
 
-## When a prompt arrives
+## Step 3 — Monitor the events log and auto-execute
 
-The watcher will display the prompt content. When it does:
+Use the Monitor tool to tail the events log:
+```
+tail -f ${PROJECT_ROOT:-.}/.mcp-events.log
+```
 
-1. Read it fully — it is self-contained with goal, context, and constraints
-2. Execute the task
-3. Write your summary to `.mcp-response.md` so ChatGPT can read it
+**Each new line that appears is the full path to a prompt file from ChatGPT.**
 
-Format for `.mcp-response.md`:
+When Monitor fires with a new line:
+1. Read the prompt file at that path immediately — do not wait for the user
+2. Execute the task fully
+3. Write your response to `.mcp-response.md` in the project root:
+
 ```
 ---
 ready: true
@@ -44,15 +54,26 @@ timestamp: [ISO datetime]
 ---
 
 ## What was done
-[Summary of what you did]
+[Summary]
 
 ## Result
-[What changed, files modified, output produced]
+[What changed, files modified, output]
+
+## Files changed
+[List]
 
 ## Next
-[Optional: what makes sense to do next]
+[What makes sense next]
 ```
+
+4. Return to monitoring — the next line from Monitor is the next task.
+
+**Do not ask for confirmation. Do not wait for the user to speak. When a line arrives, execute immediately.**
+
+---
 
 ## Stay in session mode
 
-Keep watching until the user says the session is over. Each new `.md` file in `.mcp-prompts/` is a new task from ChatGPT. After completing each task, return to watching.
+Keep the Monitor running until the user explicitly ends the session. Every new line = new task from ChatGPT. Execute each one automatically and write the response so ChatGPT can read it back.
+
+Tell the user: "Watcher active — waiting for prompts from ChatGPT. Send a task from your ChatGPT Project and I'll execute it automatically."

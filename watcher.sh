@@ -1,39 +1,36 @@
 #!/bin/bash
 # watcher.sh — watches .mcp-prompts/ for new tasks from ChatGPT
-# Run this in a Claude Code session: bash watcher.sh
 #
 # When ChatGPT calls submit_prompt(), a .md file lands in .mcp-prompts/.
-# This script detects it and prints the content so Claude Code can act on it.
-# Claude should write its response to .mcp-response.md when done.
+# This script detects new files and writes their paths to .mcp-events.log
+# so Claude Code can Monitor that log and auto-execute each task.
 
 PROMPT_DIR="${PROJECT_ROOT:-.}/.mcp-prompts"
+EVENTS_LOG="${PROJECT_ROOT:-.}/.mcp-events.log"
+
 mkdir -p "$PROMPT_DIR"
+touch "$EVENTS_LOG"
 
 echo "Watching $PROMPT_DIR for new prompts from ChatGPT..."
-echo "When a prompt arrives, read it, execute the task, then write your summary to .mcp-response.md"
+echo "Events log: $EVENTS_LOG"
 echo "---"
+
+emit() {
+  local filepath="$1"
+  echo "$filepath" >> "$EVENTS_LOG"
+  echo "[watcher] prompt arrived: $(basename "$filepath")"
+}
 
 if command -v inotifywait &>/dev/null; then
   # Linux/WSL: inotify-based (instant)
   inotifywait -m -e create "$PROMPT_DIR" --format '%f' 2>/dev/null | while read -r f; do
-    echo ""
-    echo "=== New prompt from ChatGPT: $f ==="
-    cat "$PROMPT_DIR/$f"
-    echo ""
-    echo "=== Execute the above task, then write your response to .mcp-response.md ==="
+    [[ "$f" == *.md ]] && emit "$PROMPT_DIR/$f"
   done
 elif command -v fswatch &>/dev/null; then
   # Mac: fswatch-based
-  fswatch -0 "$PROMPT_DIR" | xargs -0 -I{} sh -c '
-    f="{}"
-    if [[ "$f" == *.md ]]; then
-      echo ""
-      echo "=== New prompt from ChatGPT: $(basename $f) ==="
-      cat "$f"
-      echo ""
-      echo "=== Execute the above task, then write your response to .mcp-response.md ==="
-    fi
-  '
+  fswatch "$PROMPT_DIR" | while read -r f; do
+    [[ "$f" == *.md ]] && emit "$f"
+  done
 else
   # Fallback: polling every 3 seconds
   LAST=""
@@ -41,11 +38,7 @@ else
     LATEST=$(ls -t "$PROMPT_DIR"/*.md 2>/dev/null | head -1)
     if [[ -n "$LATEST" && "$LATEST" != "$LAST" ]]; then
       LAST="$LATEST"
-      echo ""
-      echo "=== New prompt from ChatGPT: $(basename $LATEST) ==="
-      cat "$LATEST"
-      echo ""
-      echo "=== Execute the above task, then write your response to .mcp-response.md ==="
+      emit "$LATEST"
     fi
     sleep 3
   done
