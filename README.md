@@ -134,7 +134,7 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 ## Your First Session
 
 ```
-1. bash $(cat ~/.chatgpt-pm-mcp/repo-path)/start.sh   # server + ngrok (uses saved repo path)
+1. bash $(cat ~/.chatgpt-pm-mcp/repo-path)/start.sh   # server + ngrok — runs in background, no need to keep terminal open
 2. cd /your/project && claude             # open Claude Code
    /chatgpt-session                       # start watcher + executor mode
 3. In ChatGPT: /resume                    # ChatGPT reads your project
