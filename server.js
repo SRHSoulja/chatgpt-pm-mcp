@@ -17,32 +17,42 @@ app.use((req, res, next) => {
   next();
 });
 
-const server = new Server(
-  { name: 'project-pm', version: '1.0.0' },
-  { capabilities: { tools: {} } }
-);
+// Each SSE connection gets its own Server instance — the MCP SDK does not
+// support reusing a single Server across multiple transports.
+function createServer() {
+  const server = new Server(
+    { name: 'project-pm', version: '1.0.0' },
+    { capabilities: { tools: {} } }
+  );
 
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })),
-}));
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    tools: tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })),
+  }));
 
-server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  const tool = tools.find(t => t.name === req.params.name);
-  if (!tool) throw new Error(`Unknown tool: ${req.params.name}`);
-  try {
-    const result = await tool.handler(req.params.arguments ?? {});
-    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
-  } catch (err) {
-    return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
-  }
-});
+  server.setRequestHandler(CallToolRequestSchema, async (req) => {
+    const tool = tools.find(t => t.name === req.params.name);
+    if (!tool) throw new Error(`Unknown tool: ${req.params.name}`);
+    try {
+      const result = await tool.handler(req.params.arguments ?? {});
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+    } catch (err) {
+      return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+    }
+  });
+
+  return server;
+}
 
 const transports = {};
 
 app.get('/sse', async (req, res) => {
+  const server = createServer();
   const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
-  res.on('close', () => delete transports[transport.sessionId]);
+  res.on('close', () => {
+    delete transports[transport.sessionId];
+    server.close().catch(() => {});
+  });
   await server.connect(transport);
 });
 
