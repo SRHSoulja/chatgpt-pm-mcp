@@ -163,6 +163,7 @@ ChatGPT will read `demo/TASKS.md` and the code in `demo/routes/`. Try `/plan Tas
 | Tool | What it does |
 |------|-------------|
 | `get_commands` | List all tools and verify the MCP connection is working |
+| `check_handoff_status` | Diagnose the pipeline — check bridge state, pending prompts, and response before resubmitting |
 | `read_file` | Read any project file |
 | `list_directory` | List files in a directory |
 | `get_project_context` | Load .chatgpt-resume.md / CLAUDE.md / README |
