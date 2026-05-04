@@ -48,12 +48,14 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: not found — ne
 inotifywait --version 2>/dev/null && echo "inotifywait: ok (fast watcher)" || echo "inotifywait: not found — polling fallback will be used (works, slightly slower)"
 ```
 
-- **node/npm missing**: stop and tell the user to run:
-  ```bash
-  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-  sudo apt install -y nodejs
-  ```
-  Then re-run `/chatgpt-pm-setup`.
+- **node/npm missing**: stop and tell the user:
+  > "Node and npm are missing. These require sudo so you need to run them **directly in your terminal** (not via `!` here — sudo needs a password prompt):
+  > ```bash
+  > curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  > sudo apt install -y nodejs
+  > ```
+  > Once done, come back and type `/chatgpt-pm-setup` to restart."
+  Do NOT attempt to run these commands with `!` — they will fail silently.
 - **ngrok not found**: non-blocking — note it is needed in a later step
 - **inotifywait not found**: non-blocking — watcher.sh has a polling fallback that works without it
 
@@ -149,6 +151,8 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: MISSING"
 
 **If ngrok is MISSING**, stop and tell the user:
 > "ngrok is required before we can connect ChatGPT. ChatGPT is a cloud service and needs a public HTTPS URL to reach your local MCP server.
+>
+> These commands require sudo — run them **directly in your terminal**, not via `!` here:
 >
 > Install ngrok for Linux/WSL2:
 > ```bash
