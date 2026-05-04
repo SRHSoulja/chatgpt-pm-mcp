@@ -187,22 +187,22 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: MISSING"
 > ngrok config add-authtoken YOUR_TOKEN_HERE
 > ```
 >
-> Once ngrok is installed and authenticated, open a new terminal and run:
+> Once ngrok is installed and authenticated, run:
 > ```bash
 > bash [MCP_REPO]/start.sh
 > ```
-> Then come back here and type **done** to continue."
+> `start.sh` runs everything in the background via nohup — you don't need to keep the terminal open. Then come back here and type **done** to continue."
 
 Wait for the user to type "done". Do not proceed to Step 9 until they confirm.
 
 **If ngrok is installed**, tell the user:
-> "Start the server and ngrok now. In a new terminal, run:
+> "Start the server and ngrok now:
 >
 > ```bash
 > bash [MCP_REPO]/start.sh
 > ```
 >
-> `start.sh` checks for ngrok, starts the MCP server, and waits for the tunnel URL. When it's ready, you'll see a box like this:
+> Both processes run in the background via nohup — you don't need to keep the terminal open after it starts. `start.sh` checks for ngrok, starts the MCP server, and waits for the tunnel URL. When it's ready, you'll see a box like this:
 >
 > ```
 > ┌─────────────────────────────────────────────────────┐
@@ -264,10 +264,11 @@ Tell the user:
 
 > "You're set up. Here's how to run a session:
 >
-> **Terminal 1 (if not already running):**
+> **Start the server (if not already running):**
 > ```bash
 > bash [MCP_REPO]/start.sh
 > ```
+> Runs in the background — no need to keep the terminal open.
 >
 > **Here in Claude Code:**
 > ```
