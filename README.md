@@ -42,6 +42,8 @@ bash install.sh
 - Saves the repo path to `~/.chatgpt-pm-mcp/repo-path` so the setup wizard can find it later — no matter where you cloned it
 - Copies `/chatgpt-pm-setup` and `/chatgpt-session` into Claude Code globally (`~/.claude/commands/`)
 
+**You only run `install.sh` once per machine.** The slash commands are then available in every Claude Code session globally. For each new project, just `cd` into it and run `/chatgpt-pm-setup` — takes about 2 minutes and connects that project to the bridge.
+
 **Step 2 — Go to your project and run the setup wizard:**
 
 ```bash
