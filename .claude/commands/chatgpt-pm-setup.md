@@ -157,11 +157,13 @@ ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: MISSING"
 > brew install ngrok
 > ```
 >
-> Then create a free account and authenticate:
+> Then get a free auth token:
+> 1. Go to **https://ngrok.com** and sign up for a free account
+> 2. After signing in, go to **https://dashboard.ngrok.com/authtokens**
+> 3. Copy your token, then run:
 > ```bash
-> ngrok config add-authtoken YOUR_TOKEN
+> ngrok config add-authtoken YOUR_TOKEN_HERE
 > ```
-> Get your token at: https://dashboard.ngrok.com/authtokens
 >
 > Once ngrok is installed and authenticated, run `start.sh` and then continue setup."
 
