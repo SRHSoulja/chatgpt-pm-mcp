@@ -66,7 +66,12 @@ timestamp: [ISO datetime]
 [What makes sense next]
 ```
 
-4. Return to monitoring — the next line from Monitor is the next task.
+4. **Delete the prompt file** so `safe_to_send` returns to true:
+```bash
+rm "[path to prompt file]"
+```
+
+5. Return to monitoring — the next line from Monitor is the next task.
 
 **Do not ask for confirmation. Do not wait for the user to speak. When a line arrives, execute immediately.**
 
