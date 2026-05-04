@@ -111,15 +111,21 @@ start_ngrok() {
     return
   fi
 
-  # Kill any orphaned ngrok http 3333 not tracked by pidfile
-  pkill -f "ngrok http 3333" 2>/dev/null || true
+  # Kill any orphaned ngrok processes not tracked by pidfile
+  pkill -f "ngrok http" 2>/dev/null || true
   sleep 0.3
 
   # Clear old log
   > "$LOG_NGROK"
 
-  # Start ngrok using portable binary path
-  nohup "$NGROK_BIN" http 3333 >> "$LOG_NGROK" 2>&1 &
+  # Use static domain if set in .env (ngrok free static domain or paid reserved domain)
+  local ngrok_domain="${NGROK_DOMAIN:-}"
+  if [[ -n "$ngrok_domain" ]]; then
+    echo "Using static domain: $ngrok_domain"
+    nohup "$NGROK_BIN" http --domain="$ngrok_domain" "${PORT:-3333}" >> "$LOG_NGROK" 2>&1 &
+  else
+    nohup "$NGROK_BIN" http "${PORT:-3333}" >> "$LOG_NGROK" 2>&1 &
+  fi
   local ngrok_pid=$!
   echo "$ngrok_pid" > "$PIDFILE_NGROK"
   echo "ngrok starting (pid $ngrok_pid)..."

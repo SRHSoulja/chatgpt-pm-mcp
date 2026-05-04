@@ -99,7 +99,20 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 
 **Use the URL printed by start.sh.** The `abc123` above is a placeholder — your real URL will be different. Copy the full `https://...` line and paste it into ChatGPT when creating the MCP app.
 
-> **Note:** ngrok free tier generates a new URL every time you run `start.sh`. You cannot edit an existing MCP connector in ChatGPT — you have to delete it and create a new one with the new URL. It takes about 30 seconds. If you want a stable URL across restarts, ngrok paid plans offer reserved domains.
+> **Note:** ngrok free tier generates a new URL every time you run `start.sh`. You cannot edit an existing MCP connector in ChatGPT — you have to delete it and create a new one with the new URL. It takes about 30 seconds.
+>
+> **To get a stable URL (so your connector never needs updating):**
+>
+> **Option A — ngrok free static domain** *(recommended for most users)*
+> ngrok gives every free account one static domain. Go to [dashboard.ngrok.com/domains](https://dashboard.ngrok.com/domains), claim yours, then add it to `.env`:
+> ```
+> NGROK_DOMAIN=your-name.ngrok-free.app
+> ```
+> `start.sh` picks it up automatically — same URL every restart.
+>
+> **Option B — ngrok paid** ($10/mo) — reserved domains, higher connection limits.
+>
+> **Option C — Self-hosted reverse proxy** — if you already have a domain and hosting (e.g. via Porkbun, Cloudflare Tunnel, or a VPS), you can expose the MCP server through your own domain instead of ngrok entirely. Point your reverse proxy at `localhost:3333` and use that URL in ChatGPT. This is what we use for our own setup — no ngrok dependency at all.
 
 1. **Create a ChatGPT Project** — click **+ New Project** in the ChatGPT sidebar. Give it a name. In the project settings (gear icon), set **Memory** to **"Project only"** to keep this isolated from your other chats.
 
