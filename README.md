@@ -146,6 +146,7 @@ Ask ChatGPT: `Check handoff status. Did my last prompt reach Claude Code?`
 
 | Symptom | What to do |
 |---------|-----------|
+| "Error creating connector" in ChatGPT | MCP server wasn't reachable when ChatGPT probed it. Confirm `start.sh status` shows both running, then test: `curl -v https://YOUR-URL/sse` (should return `text/event-stream`). If 502 — ngrok tunnel down; restart `start.sh`. Then retry creating the app. |
 | `start.sh` says ngrok missing | Install ngrok: see Requirements section. Authenticate with `ngrok config add-authtoken YOUR_TOKEN` (token at dashboard.ngrok.com/authtokens) |
 | `start.sh` shows no tunnel URL | ngrok failed to connect — check `.ngrok.log` for errors; common: missing authtoken (run `ngrok config add-authtoken`) |
 | ERR_NGROK_3200 in ChatGPT | Endpoint offline — ngrok is not running or the URL changed. Run `bash start.sh` and use the new URL printed |
