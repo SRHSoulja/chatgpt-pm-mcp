@@ -137,24 +137,57 @@ Tell them: "Created `.chatgpt-resume.md`. ChatGPT will read this when you type `
 
 ## STEP 8 — ngrok setup
 
-Tell the user:
-> "Now start the server and ngrok. In a new terminal, run:
+First check if ngrok is installed:
+```bash
+ngrok --version 2>/dev/null && echo "ngrok: ok" || echo "ngrok: MISSING"
+```
+
+**If ngrok is MISSING**, stop and tell the user:
+> "ngrok is required before we can connect ChatGPT. ChatGPT is a cloud service and needs a public HTTPS URL to reach your local MCP server.
+>
+> Install ngrok for Linux/WSL2:
+> ```bash
+> curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+> echo 'deb https://ngrok-agent.s3.amazonaws.com buster main' | sudo tee /etc/apt/sources.list.d/ngrok.list
+> sudo apt update && sudo apt install ngrok
+> ```
+>
+> macOS:
+> ```bash
+> brew install ngrok
+> ```
+>
+> Then create a free account and authenticate:
+> ```bash
+> ngrok config add-authtoken YOUR_TOKEN
+> ```
+> Get your token at: https://dashboard.ngrok.com/authtokens
+>
+> Once ngrok is installed and authenticated, run `start.sh` and then continue setup."
+
+Wait for the user to confirm ngrok is installed. Do not proceed to Step 9 until they confirm.
+
+**If ngrok is installed**, tell the user:
+> "Start the server and ngrok now. In a new terminal, run:
 >
 > ```bash
 > bash [MCP_REPO]/start.sh
 > ```
 >
-> You'll see a line like: `ngrok started — check [MCP_REPO]/.ngrok.log for your URL`
->
-> Run:
-> ```bash
-> grep 'url' [MCP_REPO]/.ngrok.log 2>/dev/null | tail -1
+> `start.sh` will print the real tunnel URL — it looks like:
 > ```
-> Or check the ngrok terminal output for a line like: `https://abc123.ngrok-free.app`
+> ngrok tunnel URL:
+> https://abc123.ngrok-free.app
 >
-> Paste that URL here."
+> Use this URL when connecting ChatGPT:
+> MCP Server URL: https://abc123.ngrok-free.app/sse
+> ```
+>
+> Copy the full `https://...ngrok-free.app` URL and paste it here.
+>
+> **Important:** Do not use the example URL above — it is a placeholder. Use the actual URL printed by start.sh."
 
-Wait for them to paste the ngrok URL.
+Wait for them to paste the real ngrok URL. If they paste something that looks like a placeholder or doesn't contain `ngrok` or a real domain, ask them to check the `start.sh` output again.
 
 ---
 

@@ -53,11 +53,11 @@ The `/chatgpt-pm-setup` wizard walks you through everything — dependency check
 - ChatGPT Plus or Pro (developer mode requires a paid plan)
 - Claude Code (`curl -fsSL https://claude.ai/install.sh | bash`)
 - Node.js 18+
-- ngrok (free tier works)
+- ngrok (free tier works — install from ngrok.com/download, authenticate with `ngrok config add-authtoken YOUR_TOKEN`, token at dashboard.ngrok.com/authtokens)
 
 ## ChatGPT Project Setup
 
-Once your MCP server is running and exposed via ngrok:
+Once your MCP server is running and exposed via ngrok, `start.sh` will print the real tunnel URL — use that URL, not the example placeholder. It looks like `https://abc123.ngrok-free.app` but will be different every run unless you have a paid ngrok plan with a reserved domain.
 
 1. **Enable Developer Mode** — ChatGPT Settings → Apps → Advanced Mode → Advanced Settings → Developer Mode ON
 2. **Create a new Project** — click + New Project. **Set memory to "Project only" during creation** — this option disappears after.
@@ -124,6 +124,9 @@ Ask ChatGPT: `Check handoff status. Did my last prompt reach Claude Code?`
 
 | Symptom | What to do |
 |---------|-----------|
+| `start.sh` says ngrok missing | Install ngrok: see Requirements section. Authenticate with `ngrok config add-authtoken YOUR_TOKEN` (token at dashboard.ngrok.com/authtokens) |
+| `start.sh` shows no tunnel URL | ngrok failed to connect — check `.ngrok.log` for errors; common: missing authtoken (run `ngrok config add-authtoken`) |
+| ERR_NGROK_3200 in ChatGPT | Endpoint offline — ngrok is not running or the URL changed. Run `bash start.sh` and use the new URL printed |
 | `/check` fails | MCP connection down — restart `bash start.sh`, reconnect MCP app in ChatGPT project settings |
 | Approval popup appears | Normal — approve and continue |
 | Tool call blocked by platform | Simplify the prompt, remove special characters, retry |
