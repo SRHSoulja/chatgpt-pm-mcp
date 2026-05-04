@@ -176,20 +176,21 @@ Wait for the user to confirm ngrok is installed. Do not proceed to Step 9 until 
 > bash [MCP_REPO]/start.sh
 > ```
 >
-> `start.sh` will print the real tunnel URL — it looks like:
+> `start.sh` checks for ngrok, starts the MCP server, and waits for the tunnel URL. When it's ready, you'll see a box like this:
+>
 > ```
-> ngrok tunnel URL:
-> https://abc123.ngrok-free.app
->
-> Use this URL when connecting ChatGPT:
-> MCP Server URL: https://abc123.ngrok-free.app/sse
+> ┌─────────────────────────────────────────────────────┐
+> │  ngrok tunnel URL:                                  │
+> │  https://YOURCODE.ngrok-free.app                    │
+> │                                                     │
+> │  Use this in ChatGPT → Create App:                 │
+> │  MCP Server URL: https://YOURCODE.ngrok-free.app/sse│
+> └─────────────────────────────────────────────────────┘
 > ```
 >
-> Copy the full `https://...ngrok-free.app` URL and paste it here.
->
-> **Important:** Do not use the example URL above — it is a placeholder. Use the actual URL printed by start.sh."
+> Copy the `https://YOURCODE.ngrok-free.app` line and paste it here. Your URL will be different each run — do not type `abc123` or any example URL."
 
-Wait for them to paste the real ngrok URL. If they paste something that looks like a placeholder or doesn't contain `ngrok` or a real domain, ask them to check the `start.sh` output again.
+Wait for them to paste the real ngrok URL. If the URL they paste contains `abc123` or does not start with `https://`, ask them to check the `start.sh` output again — it prints the real URL in the box above.
 
 ---
 

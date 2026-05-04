@@ -57,7 +57,19 @@ The `/chatgpt-pm-setup` wizard walks you through everything — dependency check
 
 ## ChatGPT Project Setup
 
-Once your MCP server is running and exposed via ngrok, `start.sh` will print the real tunnel URL — use that URL, not the example placeholder. It looks like `https://abc123.ngrok-free.app` but will be different every run unless you have a paid ngrok plan with a reserved domain.
+Once your MCP server is running and exposed via ngrok, `start.sh` prints the real tunnel URL in a box:
+
+```
+┌─────────────────────────────────────────────────────┐
+│  ngrok tunnel URL:                                  │
+│  https://abc123.ngrok-free.app                      │
+│                                                     │
+│  Use this in ChatGPT → Create App:                 │
+│  MCP Server URL: https://abc123.ngrok-free.app/sse  │
+└─────────────────────────────────────────────────────┘
+```
+
+**Use the URL printed by start.sh.** The `abc123` above is a placeholder — your real URL will be different. Copy the full `https://...` line and paste it into ChatGPT when creating the MCP app.
 
 1. **Enable Developer Mode** — ChatGPT Settings → Apps → Advanced Mode → Advanced Settings → Developer Mode ON
 2. **Create a new Project** — click + New Project. **Set memory to "Project only" during creation** — this option disappears after.

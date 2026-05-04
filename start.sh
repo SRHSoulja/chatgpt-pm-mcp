@@ -10,54 +10,61 @@ LOG_SERVER="$SCRIPT_DIR/.server.log"
 LOG_NGROK="$SCRIPT_DIR/.ngrok.log"
 PIDFILE_SERVER="$SCRIPT_DIR/.server.pid"
 PIDFILE_NGROK="$SCRIPT_DIR/.ngrok.pid"
-NGROK_URL_TIMEOUT=15  # seconds to wait for tunnel URL
+NGROK_URL_TIMEOUT=20  # seconds to wait for tunnel URL
+
+# Portable ngrok lookup — never hardcode a path
+NGROK_BIN="$(command -v ngrok || true)"
 
 # ── ngrok preflight ────────────────────────────────────────────────────────────
 check_ngrok() {
-  if ! command -v ngrok &>/dev/null; then
+  if [[ -z "$NGROK_BIN" ]]; then
     echo ""
-    echo "ERROR: ngrok is not installed."
+    echo "ERROR: ngrok is not installed (not found in PATH)."
     echo ""
     echo "ngrok is required so ChatGPT (a cloud service) can reach your local MCP server."
     echo ""
     echo "Install ngrok:"
     echo "  Linux/WSL2:"
-    echo "    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null"
-    echo "    echo 'deb https://ngrok-agent.s3.amazonaws.com buster main' | sudo tee /etc/apt/sources.list.d/ngrok.list"
+    echo "    curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \\"
+    echo "      | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null"
+    echo "    echo 'deb https://ngrok-agent.s3.amazonaws.com buster main' \\"
+    echo "      | sudo tee /etc/apt/sources.list.d/ngrok.list"
     echo "    sudo apt update && sudo apt install ngrok"
     echo ""
-    echo "  macOS (with Homebrew):"
-    echo "    brew install ngrok"
+    echo "  macOS: brew install ngrok"
+    echo "  Other: https://ngrok.com/download"
     echo ""
-    echo "  Or download from: https://ngrok.com/download"
-    echo ""
-    echo "After installing, get a free auth token:"
-    echo "  1. Go to https://ngrok.com and sign up for a free account"
-    echo "  2. After signing in, go to: https://dashboard.ngrok.com/authtokens"
-    echo "  3. Copy your token, then run:"
+    echo "Then get a free auth token:"
+    echo "  1. Sign up at https://ngrok.com (free)"
+    echo "  2. Go to https://dashboard.ngrok.com/authtokens"
+    echo "  3. Copy your token and run:"
     echo "     ngrok config add-authtoken YOUR_TOKEN_HERE"
     echo ""
-    echo "Windows users: run this inside your WSL2 terminal, not PowerShell."
+    echo "Windows users: do this inside WSL2, not PowerShell."
     echo ""
     return 1
   fi
 
-  # Check if ngrok has an authtoken configured
-  local ngrok_config
-  ngrok_config="${HOME}/.config/ngrok/ngrok.yml"
-  if [[ ! -f "$ngrok_config" ]] || ! grep -q "authtoken" "$ngrok_config" 2>/dev/null; then
-    # Also check legacy path
-    local legacy_config="${HOME}/.ngrok2/ngrok.yml"
-    if [[ ! -f "$legacy_config" ]] || ! grep -q "authtoken" "$legacy_config" 2>/dev/null; then
-      echo ""
-      echo "WARNING: ngrok may not be authenticated."
-      echo ""
-      echo "If the tunnel fails to start:"
-      echo "  1. Sign up free at https://ngrok.com"
-      echo "  2. Get your token at: https://dashboard.ngrok.com/authtokens"
-      echo "  3. Run: ngrok config add-authtoken YOUR_TOKEN_HERE"
-      echo ""
+  # Warn if no authtoken found in known config locations
+  local has_token=false
+  for cfg in \
+    "${HOME}/.config/ngrok/ngrok.yml" \
+    "${HOME}/.ngrok2/ngrok.yml" \
+    "${XDG_CONFIG_HOME:-}/ngrok/ngrok.yml"; do
+    if [[ -f "$cfg" ]] && grep -q "authtoken" "$cfg" 2>/dev/null; then
+      has_token=true
+      break
     fi
+  done
+
+  if ! $has_token; then
+    echo ""
+    echo "WARNING: ngrok authtoken not detected in config."
+    echo "If the tunnel fails to start:"
+    echo "  1. Sign up at https://ngrok.com (free)"
+    echo "  2. Get your token at https://dashboard.ngrok.com/authtokens"
+    echo "  3. Run: ngrok config add-authtoken YOUR_TOKEN_HERE"
+    echo ""
   fi
 
   return 0
@@ -75,40 +82,74 @@ start_server() {
   fi
 }
 
+# ── ngrok URL from local API (works for ngrok v2 and v3) ──────────────────────
+get_ngrok_url_from_api() {
+  # ngrok exposes a local API on port 4040 — most reliable source of truth
+  local url
+  url=$(curl -s --connect-timeout 2 http://127.0.0.1:4040/api/tunnels 2>/dev/null \
+    | python3 -c "
+import json, sys
+try:
+    d = json.load(sys.stdin)
+    for t in d.get('tunnels', []):
+        u = t.get('public_url', '')
+        if u.startswith('https://'):
+            print(u)
+            break
+except:
+    pass
+" 2>/dev/null)
+  echo "$url"
+}
+
 # ── ngrok ──────────────────────────────────────────────────────────────────────
 start_ngrok() {
-  # Reuse if already running
+  # Prevent duplicate: reuse if already running
   if [[ -f "$PIDFILE_NGROK" ]] && kill -0 "$(cat "$PIDFILE_NGROK")" 2>/dev/null; then
-    echo "ngrok already running (pid $(cat "$PIDFILE_NGROK"))"
-    echo "Getting existing tunnel URL..."
-    get_ngrok_url
+    echo "ngrok already running (pid $(cat "$PIDFILE_NGROK")) — getting URL..."
+    wait_for_ngrok_url
     return
   fi
 
-  # Clear old log so URL grep is unambiguous
+  # Kill any orphaned ngrok http 3333 not tracked by pidfile
+  pkill -f "ngrok http 3333" 2>/dev/null || true
+  sleep 0.3
+
+  # Clear old log
   > "$LOG_NGROK"
-  nohup ngrok http 3333 --log=stdout >> "$LOG_NGROK" 2>&1 &
-  echo $! > "$PIDFILE_NGROK"
-  echo "ngrok starting (pid $!)..."
-  get_ngrok_url
+
+  # Start ngrok using portable binary path
+  nohup "$NGROK_BIN" http 3333 >> "$LOG_NGROK" 2>&1 &
+  local ngrok_pid=$!
+  echo "$ngrok_pid" > "$PIDFILE_NGROK"
+  echo "ngrok starting (pid $ngrok_pid)..."
+
+  # Give it a moment then verify it stayed alive
+  sleep 2
+  if ! kill -0 "$ngrok_pid" 2>/dev/null; then
+    rm -f "$PIDFILE_NGROK"
+    echo ""
+    echo "ERROR: ngrok process exited immediately."
+    echo "Check the log: cat $LOG_NGROK"
+    echo ""
+    echo "Common cause: missing or invalid authtoken."
+    echo "  1. Sign up at https://ngrok.com (free)"
+    echo "  2. Get your token at https://dashboard.ngrok.com/authtokens"
+    echo "  3. Run: ngrok config add-authtoken YOUR_TOKEN_HERE"
+    return 1
+  fi
+
+  wait_for_ngrok_url
 }
 
-# Wait for ngrok to print a tunnel URL, then display it
-get_ngrok_url() {
+wait_for_ngrok_url() {
   local elapsed=0
   local url=""
+  echo "Waiting for tunnel URL..."
   while [[ $elapsed -lt $NGROK_URL_TIMEOUT ]]; do
-    url=$(grep -oP 'url=https://\S+' "$LOG_NGROK" 2>/dev/null | head -1 | sed 's/url=//')
+    url=$(get_ngrok_url_from_api)
     if [[ -n "$url" ]]; then
-      echo ""
-      echo "╔═══════════════════════════════════════════════════╗"
-      echo "  ngrok tunnel URL:"
-      echo "  $url"
-      echo ""
-      echo "  Use this URL when connecting ChatGPT:"
-      echo "  MCP Server URL: ${url}/sse"
-      echo "╚═══════════════════════════════════════════════════╝"
-      echo ""
+      print_url "$url"
       return 0
     fi
     sleep 1
@@ -116,18 +157,46 @@ get_ngrok_url() {
   done
 
   echo ""
-  echo "WARNING: ngrok URL not found after ${NGROK_URL_TIMEOUT}s."
+  echo "ERROR: No tunnel URL found after ${NGROK_URL_TIMEOUT}s."
   echo ""
-  echo "The tunnel may have failed. Check the log for errors:"
+  echo "ngrok may have failed to connect. Check the log:"
   echo "  cat $LOG_NGROK"
   echo ""
   echo "Common causes:"
-  echo "  ERR_NGROK_108 — no authtoken. Run: ngrok config add-authtoken YOUR_TOKEN"
-  echo "  ERR_NGROK_3200 — endpoint offline; old URL is no longer valid"
-  echo "  Connection error — check your internet connection"
+  echo "  ERR_NGROK_108  — no authtoken configured"
+  echo "  ERR_NGROK_3200 — old/stale tunnel URL; restart ngrok"
+  echo "  No internet    — check your connection"
   echo ""
-  echo "Get your auth token at: https://dashboard.ngrok.com/authtokens"
+  echo "To authenticate: ngrok config add-authtoken YOUR_TOKEN_HERE"
+  echo "(token at https://dashboard.ngrok.com/authtokens)"
   return 1
+}
+
+print_url() {
+  local url="$1"
+  echo ""
+  echo "┌─────────────────────────────────────────────────────┐"
+  echo "│  ngrok tunnel URL:                                  │"
+  echo "│  $url"
+  echo "│                                                     │"
+  echo "│  Use this in ChatGPT → Create App:                 │"
+  echo "│  MCP Server URL: ${url}/sse"
+  echo "└─────────────────────────────────────────────────────┘"
+  echo ""
+}
+
+# ── status ─────────────────────────────────────────────────────────────────────
+status() {
+  echo "Server: $([[ -f "$PIDFILE_SERVER" ]] && kill -0 "$(cat "$PIDFILE_SERVER")" 2>/dev/null && echo "RUNNING (pid $(cat "$PIDFILE_SERVER"))" || echo "STOPPED")"
+  echo "ngrok:  $([[ -f "$PIDFILE_NGROK" ]] && kill -0 "$(cat "$PIDFILE_NGROK")" 2>/dev/null && echo "RUNNING (pid $(cat "$PIDFILE_NGROK"))" || echo "STOPPED")"
+  local url
+  url=$(get_ngrok_url_from_api)
+  if [[ -n "$url" ]]; then
+    echo "Tunnel: $url"
+    echo "MCP endpoint: ${url}/sse"
+  else
+    echo "Tunnel: not found"
+  fi
 }
 
 # ── stop ───────────────────────────────────────────────────────────────────────
@@ -144,32 +213,14 @@ stop() {
   done
 }
 
-# ── status ─────────────────────────────────────────────────────────────────────
-status() {
-  echo "Server: $([[ -f "$PIDFILE_SERVER" ]] && kill -0 "$(cat "$PIDFILE_SERVER")" 2>/dev/null && echo "RUNNING (pid $(cat "$PIDFILE_SERVER"))" || echo "STOPPED")"
-  echo "ngrok:  $([[ -f "$PIDFILE_NGROK" ]] && kill -0 "$(cat "$PIDFILE_NGROK")" 2>/dev/null && echo "RUNNING (pid $(cat "$PIDFILE_NGROK"))" || echo "STOPPED")"
-  echo ""
-  local url
-  url=$(grep -oP 'url=https://\S+' "$LOG_NGROK" 2>/dev/null | head -1 | sed 's/url=//')
-  if [[ -n "$url" ]]; then
-    echo "Tunnel URL: $url"
-    echo "MCP endpoint: ${url}/sse"
-  else
-    echo "Tunnel URL: not found (run start.sh to start)"
-  fi
-  echo ""
-  echo "NEXT STEP: open Claude Code in your project and type /chatgpt-session"
-}
-
 # ── main ───────────────────────────────────────────────────────────────────────
 case "${1:-start}" in
   start)
     start_server
     sleep 1
     check_ngrok || exit 1
-    start_ngrok
-    echo ""
-    echo "Server is running. Use the tunnel URL above for your ChatGPT MCP connector."
+    start_ngrok || exit 1
+    echo "MCP server and tunnel are running."
     echo ""
     echo "REQUIRED NEXT STEP:"
     echo "  cd /your/project && claude"
