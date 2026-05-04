@@ -47,12 +47,23 @@ const transports = {};
 
 app.get('/sse', async (req, res) => {
   const server = createServer();
-  // Build absolute messages URL using the host header so it works through
-  // reverse proxies like ngrok. ChatGPT needs a full URL to POST back on.
+  // SSEServerTransport (SDK ≤1.29) ignores the absolute URL passed to it and
+  // always emits `data: /messages?sessionId=...`. ChatGPT needs a full URL to
+  // POST tool calls back. Patch res.write to rewrite that one event line.
   const proto = req.headers['x-forwarded-proto'] || 'https';
   const host  = req.headers['x-forwarded-host'] || req.headers['host'] || `localhost:${PORT}`;
-  const messagesUrl = `${proto}://${host}/messages`;
-  const transport = new SSEServerTransport(messagesUrl, res);
+  const base  = `${proto}://${host}`;
+
+  const origWrite = res.write.bind(res);
+  res.write = (chunk, ...args) => {
+    let str = typeof chunk === 'string' ? chunk : chunk.toString('utf8');
+    // Replace `data: /messages?` with the absolute URL so ChatGPT can POST back.
+    str = str.replace(/(data: )(\/messages\?)/g, `$1${base}$2`);
+    const patched = Buffer.isBuffer(chunk) ? Buffer.from(str, 'utf8') : str;
+    return origWrite(patched, ...args);
+  };
+
+  const transport = new SSEServerTransport('/messages', res);
   transports[transport.sessionId] = transport;
   res.on('close', () => {
     delete transports[transport.sessionId];
