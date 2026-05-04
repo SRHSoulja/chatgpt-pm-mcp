@@ -7,3 +7,6 @@ node_modules/
 .server.log
 .ngrok.log
 TASKS.md
+
+# Allow demo versions of runtime files so users have examples to learn from
+!demo/TASKS.md

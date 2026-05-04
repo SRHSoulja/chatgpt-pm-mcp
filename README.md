@@ -103,6 +103,18 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 9. Repeat
 ```
 
+**Using the demo project?** The `demo/` folder is a small Express API with pre-written tasks. Use it to test the full loop before connecting your real project:
+
+```bash
+cd /path/where/you/cloned/chatgpt-pm-mcp/demo
+claude
+/chatgpt-pm-setup
+```
+
+ChatGPT will read `demo/TASKS.md` and the code in `demo/routes/`. Try `/plan Task 1` — add rate limiting to the login route — and watch Claude Code implement it.
+
+**Writing prompts?** See `prompts/template-task.md` for the self-contained prompt format, and `prompts/example-add-feature.md` / `prompts/example-fix-bug.md` for complete examples.
+
 ## Tools Exposed to ChatGPT
 
 | Tool | What it does |
