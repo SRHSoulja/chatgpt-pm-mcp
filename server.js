@@ -47,7 +47,12 @@ const transports = {};
 
 app.get('/sse', async (req, res) => {
   const server = createServer();
-  const transport = new SSEServerTransport('/messages', res);
+  // Build absolute messages URL using the host header so it works through
+  // reverse proxies like ngrok. ChatGPT needs a full URL to POST back on.
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const host  = req.headers['x-forwarded-host'] || req.headers['host'] || `localhost:${PORT}`;
+  const messagesUrl = `${proto}://${host}/messages`;
+  const transport = new SSEServerTransport(messagesUrl, res);
   transports[transport.sessionId] = transport;
   res.on('close', () => {
     delete transports[transport.sessionId];
