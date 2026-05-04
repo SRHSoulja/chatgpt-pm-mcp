@@ -27,7 +27,7 @@ Native Windows PowerShell/CMD is not supported. If you are on Windows, install W
 sudo apt update && sudo apt install -y git curl
 
 # Claude Code — skip if already installed
-curl -fsSL https://claude.ai/install.sh | sh
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
 **Step 2 — Clone the repo and run the installer:**
