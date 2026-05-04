@@ -99,6 +99,8 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 
 **Use the URL printed by start.sh.** The `abc123` above is a placeholder — your real URL will be different. Copy the full `https://...` line and paste it into ChatGPT when creating the MCP app.
 
+> **Note:** ngrok free tier generates a new URL every time you run `start.sh`. You cannot edit an existing MCP connector in ChatGPT — you have to delete it and create a new one with the new URL. It takes about 30 seconds. If you want a stable URL across restarts, ngrok paid plans offer reserved domains.
+
 1. **Create a ChatGPT Project** — click **+ New Project** in the ChatGPT sidebar. Give it a name. In the project settings (gear icon), set **Memory** to **"Project only"** to keep this isolated from your other chats.
 
 2. **Enable Developer Mode** — inside the project, go to **Settings → Apps**. Toggle **Developer mode** ON. You'll see an "ELEVATED RISK" warning — this is expected. Leave **"Enforce CSP in developer mode"** OFF (this allows unrestricted network access, which is needed for your ngrok tunnel).
@@ -197,6 +199,7 @@ Ask ChatGPT: `Check handoff status. Did my last prompt reach Claude Code?`
 | `get_response` times out | Do NOT resubmit — call `check_handoff_status` first. If prompt file exists, Claude may still be working; keep polling |
 | Status says running / safe_to_send false | Wait — Claude is executing. Poll `get_response`, do not send again |
 | Duplicate execution risk | Always call `check_handoff_status` before sending — if pending_prompt_count > 0, wait |
+| ngrok URL changed after restart | ngrok free tier gives a new URL every run. You cannot edit an existing MCP connector — delete it and create a new one (Project → Settings → Apps → delete old app → Create app with new URL). Takes 30 seconds. |
 | Connector stale after restart | Delete and re-add the MCP app in ChatGPT project settings |
 | Nothing works | **Manual fallback:** copy ChatGPT's structured prompt into Claude Code directly. Summarize result back. Always works. |
 
