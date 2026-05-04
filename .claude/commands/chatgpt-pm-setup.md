@@ -113,7 +113,14 @@ Wait for their choice and act accordingly.
 
 ## STEP 7 — Create .chatgpt-resume.md
 
-Ask the user:
+First check if `.chatgpt-resume.md` already exists in the current directory.
+
+**If it exists** (e.g. user is in the demo folder): tell the user:
+> "Found an existing `.chatgpt-resume.md` — keeping it as-is. ChatGPT will use this when you type `/resume`."
+
+Skip the rest of this step.
+
+**If it does not exist**, ask the user:
 > "Tell me 2-3 sentences about this project: what it is, what's been built, and what you're working on next."
 
 Once they answer, write `.chatgpt-resume.md` to the current directory:
