@@ -42,7 +42,7 @@ The `/chatgpt-pm-setup` wizard walks you through everything — dependencies, .e
 ## Requirements
 
 - ChatGPT Plus or Pro (developer mode requires a paid plan)
-- Claude Code (`npm install -g @anthropic-ai/claude-code`)
+- Claude Code (`curl -fsSL https://claude.ai/install.sh | bash`)
 - Node.js 18+
 - ngrok (free tier works)
 
