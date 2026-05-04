@@ -20,14 +20,13 @@ Native Windows PowerShell/CMD is not supported. If you are on Windows, install W
 
 ## Setup
 
-**Step 1 — Install prerequisites (fresh system only):**
+**Step 1 — Install prerequisites (skip anything you already have):**
 
 ```bash
+# git and curl — skip if already installed
 sudo apt update && sudo apt install -y git curl
-```
 
-Then install Claude Code:
-```bash
+# Claude Code — skip if already installed
 curl -fsSL https://claude.ai/install.sh | sh
 ```
 
