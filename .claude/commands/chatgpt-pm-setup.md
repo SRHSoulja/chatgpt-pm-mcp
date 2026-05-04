@@ -217,7 +217,7 @@ Once you have the ngrok URL, tell the user:
 > - Click **Create**
 >
 > **4. Paste project instructions**
-> Open `[MCP_REPO]/chatgpt-instructions.md`, copy everything after the divider, and paste into your ChatGPT Project instructions (Project → Settings → Instructions).
+> Open `[MCP_REPO]/chatgpt-instructions.md`, copy the full contents, and paste into your ChatGPT Project instructions (Project → Settings → Instructions).
 >
 > **5. Verify the connection**
 > In your ChatGPT Project, type:

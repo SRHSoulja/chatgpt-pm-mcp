@@ -91,7 +91,7 @@ Wait for "connected" or questions.
 
 Tell them:
 
-> "Now paste the project manager instructions into your ChatGPT Project. Open `chatgpt-instructions.md` from this repo, copy everything after the divider line, and paste it into: ChatGPT Project → Instructions."
+> "Now paste the project manager instructions into your ChatGPT Project. Open `chatgpt-instructions.md` from this repo, copy the full contents, and paste into: ChatGPT Project → Instructions."
 
 Wait for confirmation.
 

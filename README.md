@@ -82,7 +82,7 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
    - Check **"I understand and want to continue"**
    - Click **Create**
 
-4. **Paste the project instructions** — copy everything after the divider in `chatgpt-instructions.md` into your ChatGPT Project instructions (Project → Settings → Instructions).
+4. **Paste the project instructions** — copy the full contents of `chatgpt-instructions.md` into your ChatGPT Project instructions (Project → Settings → Instructions).
 
 5. **Verify the connection** — in your ChatGPT Project, type: `Check the MCP tools available for this project and tell me what you can do.` ChatGPT will call `get_commands()` and report back. You may not see the tools listed in the UI — that's normal, ChatGPT verifies through MCP internally.
 
