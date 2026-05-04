@@ -201,7 +201,7 @@ Once you have the ngrok URL, tell the user:
 > "Now set up the ChatGPT side:
 >
 > **1. Create a ChatGPT Project**
-> Click **+ New Project** in the ChatGPT sidebar and give it a name.
+> Click **+ New Project** in the ChatGPT sidebar and give it a name. In the project settings (gear icon), set **Memory** to **"Project only"** to keep this isolated from your other chats.
 >
 > **2. Enable Developer Mode**
 > Inside the project, go to **Settings → Apps**. Toggle **Developer mode** ON.

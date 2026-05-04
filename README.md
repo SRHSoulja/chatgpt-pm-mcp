@@ -71,7 +71,7 @@ Once your MCP server is running and exposed via ngrok, `start.sh` prints the rea
 
 **Use the URL printed by start.sh.** The `abc123` above is a placeholder — your real URL will be different. Copy the full `https://...` line and paste it into ChatGPT when creating the MCP app.
 
-1. **Create a ChatGPT Project** — click **+ New Project** in the ChatGPT sidebar. Give it a name.
+1. **Create a ChatGPT Project** — click **+ New Project** in the ChatGPT sidebar. Give it a name. In the project settings (gear icon), set **Memory** to **"Project only"** to keep this isolated from your other chats.
 
 2. **Enable Developer Mode** — inside the project, go to **Settings → Apps**. Toggle **Developer mode** ON. You'll see an "ELEVATED RISK" warning — this is expected. Leave **"Enforce CSP in developer mode"** OFF (this allows unrestricted network access, which is needed for your ngrok tunnel).
 

@@ -77,7 +77,3 @@ If I type `/response`, call `get_response(timeout_seconds: 0)` to check immediat
 - Do not invent work
 - Behavior change beats documentation
 - If a change is large or risky, plan before submitting — ask me to confirm first
-
-## MEMORY
-
-Set your project memory to **"Project only"** (available when creating the project) to keep this project isolated from your other ChatGPT conversations.
