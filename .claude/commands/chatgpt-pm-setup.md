@@ -214,7 +214,9 @@ Wait for the user to type "done". Do not proceed to Step 9 until they confirm.
 > └─────────────────────────────────────────────────────┘
 > ```
 >
-> Copy the `https://YOURCODE.ngrok-free.app` line and paste it here. Your URL will be different each run — do not type `abc123` or any example URL."
+> Copy the `https://YOURCODE.ngrok-free.app` line and paste it here.
+>
+> **If you set a static domain in Step 5:** that domain will always appear in this box — you only need to create the ChatGPT connector once and it will work every restart. **If you skipped it:** your URL is different each run — do not type `abc123` or any example URL, always copy from the box."
 
 Wait for them to paste the real ngrok URL. If the URL they paste contains `abc123` or does not start with `https://`, ask them to check the `start.sh` output again — it prints the real URL in the box above.
 
