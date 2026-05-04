@@ -62,17 +62,17 @@ The `/chatgpt-pm-setup` wizard walks you through everything — dependency check
 
 ## Adding a Second Project
 
-Already set up on one project and want to connect another? You don't need to reinstall anything.
+Already set up on one project and want to connect another? Use the `/chatgpt-switch-project` command — it skips all the first-time setup (deps, ngrok, ChatGPT connector) and only does the project-specific parts.
 
 ```bash
 cd /path/to/your/other/project
 claude
-/chatgpt-pm-setup
+/chatgpt-switch-project
 ```
 
-The wizard will find your existing MCP repo automatically, set `PROJECT_ROOT` to the new folder, and create a `.chatgpt-resume.md` for it. In your ChatGPT Project, update the `PROJECT_ROOT` by running `/context` to reload — or create a second ChatGPT Project for a clean separation between projects.
+It will update `PROJECT_ROOT`, create a `.chatgpt-resume.md` if needed, and tell you to restart the server. In ChatGPT, type `/context` to reload the new project's files.
 
-To switch which project the running server points at: stop the server (`bash start.sh stop`), update `PROJECT_ROOT` in `.env`, and restart (`bash start.sh`).
+To keep projects fully separate, create a dedicated ChatGPT Project for each one.
 
 ## Requirements
 

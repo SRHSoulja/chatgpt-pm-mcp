@@ -35,6 +35,10 @@ echo "✓ Installed /chatgpt-pm-setup to $CLAUDE_COMMANDS"
 cp "$REPO_DIR/.claude/commands/chatgpt-session.md" "$CLAUDE_COMMANDS/chatgpt-session.md"
 echo "✓ Installed /chatgpt-session to $CLAUDE_COMMANDS"
 
+# Copy the switch-project command
+cp "$REPO_DIR/.claude/commands/chatgpt-switch-project.md" "$CLAUDE_COMMANDS/chatgpt-switch-project.md"
+echo "✓ Installed /chatgpt-switch-project to $CLAUDE_COMMANDS"
+
 echo ""
 echo "Done. Next steps:"
 echo ""
@@ -42,5 +46,6 @@ echo "  1. cd /path/to/your/project    (or: cd $REPO_DIR/demo)"
 echo "  2. claude"
 echo "  3. /chatgpt-pm-setup"
 echo ""
+echo "To connect a second project later: cd into it, then run /chatgpt-switch-project"
 echo "The setup wizard will walk you through everything from there."
 echo "It knows the repo is at: $REPO_DIR"
