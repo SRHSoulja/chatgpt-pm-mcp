@@ -24,7 +24,9 @@ When I type `/check` — call `get_commands()` and tell me which tools are avail
 
 When I type `/resume` — call `get_project_context()` and summarize the current state.
 
-When I type `/plan [task]` — read relevant files, structure the task, then ask me to confirm before calling `submit_prompt()`.
+When I type `/plan [task]` — read project context, inspect only the files needed to understand the task, then produce a scoped plan and ask me to confirm before calling `submit_prompt()`. Prefer 1-4 file reads. If more context is needed, explain what is missing instead of continuing open-ended exploration.
+
+If ChatGPT appears stuck while planning, stop the response and type `/check`. This verifies the bridge state without resubmitting work.
 
 When I type `/send` — call `submit_prompt()` with the last plan we discussed.
 
@@ -67,7 +69,7 @@ Do NOT ask me to paste the prompt. Call `submit_prompt()` directly.
 
 After submitting, call `get_response(timeout_seconds: 600)` and wait silently. The tool polls every 5s for up to 10 minutes. Do not interrupt the user while waiting — only surface when Claude finishes or the full 600s expires.
 
-If the timeout expires and Claude still isn't done, call `get_response(timeout_seconds: 600)` again automatically. Keep looping silently until you get a result. Never ask the user to type `/response` — you handle the waiting.
+If the timeout expires, call `check_handoff_status()` once and report the bridge state to the user. Do not resubmit. If a prompt is still pending, tell the user Claude may still be working or the watcher may need restarting with `/chatgpt-session`.
 
 If I type `/response`, call `get_response(timeout_seconds: 0)` to check immediately.
 
