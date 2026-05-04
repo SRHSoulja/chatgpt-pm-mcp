@@ -60,6 +60,20 @@ The `/chatgpt-pm-setup` wizard walks you through everything — dependency check
 - **Have an existing project?** `cd` into it, then run `claude` and `/chatgpt-pm-setup`
 - **No project / just testing?** Use the `demo/` folder inside this repo — a generic Express API with sample tasks and prompts
 
+## Adding a Second Project
+
+Already set up on one project and want to connect another? You don't need to reinstall anything.
+
+```bash
+cd /path/to/your/other/project
+claude
+/chatgpt-pm-setup
+```
+
+The wizard will find your existing MCP repo automatically, set `PROJECT_ROOT` to the new folder, and create a `.chatgpt-resume.md` for it. In your ChatGPT Project, update the `PROJECT_ROOT` by running `/context` to reload — or create a second ChatGPT Project for a clean separation between projects.
+
+To switch which project the running server points at: stop the server (`bash start.sh stop`), update `PROJECT_ROOT` in `.env`, and restart (`bash start.sh`).
+
 ## Requirements
 
 - ChatGPT Plus or Pro (developer mode requires a paid plan)
